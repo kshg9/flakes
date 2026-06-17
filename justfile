@@ -3,8 +3,8 @@ set shell := ["bash", "-uc"]
 disko:
     @echo "=== Partitioning disk ==="
 
-    if [ ! -b /dev/disk/by-id/nvme-SAMSUNG_MZALQ512HBLU-00BL2_S65DNX1T647774 ]; then
-        echo "ERROR: disk not found at /dev/disk/by-id/nvme-SAMSUNG_MZALQ512HBLU-00BL2_S65DNX1T647774" >&2
+    if [ ! -b /dev/nvme0n1 ]; then
+        echo "ERROR: /dev/nvme0n1 not found" >&2
         exit 1
     fi
 
