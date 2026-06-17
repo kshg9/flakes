@@ -1,5 +1,5 @@
-{ pkgs, ... }: {
-  flake.nixosModules.printer = {
+{ ... }: {
+  flake.nixosModules.printer = { config, pkgs, ... }: {
     services.printing = {
       enable = true;
       drivers = [ pkgs.canon-capt ];
