@@ -7,7 +7,7 @@ FLAKE_ROOT="${FLAKE_ROOT:-$(pwd)}"
 echo "=== Partitioning disk with disko (.#hostMain) ==="
 nix --extra-experimental-features "nix-command flakes" \
   run github:nix-community/disko/latest -- \
-  --mode destroy,format,mount ".#hostMain"
+  --mode destroy,format,mount --flake ".#hostMain"
 
 echo "=== Setting root-blank subvolume read-only ==="
 mkdir -p /tmp/btrfs_mnt
