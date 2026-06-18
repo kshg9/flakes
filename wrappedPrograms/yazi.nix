@@ -6,33 +6,18 @@
       config,
       ...
     }:
-    let
-      plugins = with pkgs.yaziPlugins; {
-        git = git;
-        wl-clipboard = wl-clipboard;
-      };
-
-      makePlugin = name: pluginDrv: {
-        content = "";
-        relPath = "${config.binName}-config/plugins/${name}.yazi";
-        builder = ''
-          mkdir -p "$(dirname "$2")"
-          ln -s "${pluginDrv}" "$2"
-        '';
-      };
-    in
     {
       imports = [ wlib.wrapperModules.yazi ];
 
       settings.yazi = {
-        enableFishIntegration = true;
+        "enable-fish-integration" = true;
         mgr = {
-          sort_by = "alphabetical";
-          sort_dir_first = true;
+          "sort-by" = "alphabetical";
+          "sort-dir-first" = true;
           linemode = "size";
         };
         plugin = {
-          prepend_fetchers = [
+          "prepend-fetchers" = [
             {
               url = "*";
               run = "git";
@@ -49,7 +34,7 @@
 
       settings.keymap = {
         mgr = {
-          prepend_keymap = [
+          "prepend-keymap" = [
             {
               on = [ "Y" ];
               run = "plugin wl-clipboard";
@@ -67,14 +52,11 @@
         };
       };
 
-      constructFiles = lib.mapAttrs makePlugin plugins // {
-        luaInit = {
-          content = ''
-            require("git"):setup()
-            require("wl-clipboard"):setup()
-          '';
-          relPath = "${config.binName}-config/init.lua";
-        };
+      plugins = with pkgs.yaziPlugins; {
+        git = git;
+        wl-clipboard = wl-clipboard;
       };
+
+      constructFiles = { };
     };
 }

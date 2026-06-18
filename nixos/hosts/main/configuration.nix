@@ -27,6 +27,7 @@
         self.nixosModules.impermanence
         self.nixosModules.nvidia
         self.nixosModules.vicinae
+        self.nixosModules.greetd
 
         inputs.disko.nixosModules.disko
         self.diskoConfigurations.hostMain

@@ -24,8 +24,8 @@ echo "=== Patching password into general.nix ==="
 sed -i "/initialHashedPassword/c\      initialHashedPassword = \"$passwd_hash\";" ./nixos/features/general.nix
 
 echo "=== Installing NixOS (.#main) ==="
-export NIX_CONFIG="extra-substituters = https://nix-community.cachix.org https://vicinae.cachix.org https://cache.nixos-cuda.org
-extra-trusted-public-keys = nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs= vicinae.cachix.org-1:1kDrfienkGHPYbkpNj1mWTr7Fm1+zcenzgTizIcI3oc= cache.nixos-cuda.org:74DUi4Ye579gUqzH4ziL9IyiJBlDpMRn9MBN8oNan9M="
-nixos-install --no-root-passwd --flake ".#main"
+nixos-install --no-root-passwd --flake ".#main" \
+  --option extra-substituters "https://nix-community.cachix.org https://vicinae.cachix.org https://cache.nixos-cuda.org" \
+  --option extra-trusted-public-keys "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs= vicinae.cachix.org-1:1kDrfienkGHPYbkpNj1mWTr7Fm1+zcenzgTizIcI3oc= cache.nixos-cuda.org:74DUi4Ye579gUqzH4ziL9IyiJBlDpMRn9MBN8oNan9M=" \
 
 echo "=== Done. Reboot and run: just rebuild ==="

@@ -25,7 +25,11 @@
           repeat-rate = 40;
           repeat-delay = 250;
         };
-        touchpad.natural-scroll = _: { };
+        touchpad = {
+          tap = _: { };
+          natural-scroll = _: { };
+          dwt = _: { };
+        };
         mouse.accel-profile = "flat";
       };
 
@@ -46,6 +50,11 @@
         "Mod+Shift+K".move-window-up = _: { };
         "Mod+Shift+J".move-window-down = _: { };
 
+        "Mod+U".focus-workspace-down = _: { };
+        "Mod+I".focus-workspace-up = _: { };
+        "Mod+Ctrl+U".move-column-to-workspace-down = _: { };
+        "Mod+Ctrl+I".move-column-to-workspace-up = _: { };
+
         "Mod+1".focus-workspace = "w0";
         "Mod+2".focus-workspace = "w1";
         "Mod+3".focus-workspace = "w2";
@@ -63,25 +72,80 @@
         "Mod+Ctrl+J".set-window-height = "-5%";
         "Mod+Ctrl+K".set-window-height = "+5%";
 
+        "Print".screenshot = _: { };
+        "Ctrl+Print".screenshot-screen = _: { };
+        "Alt+Print".screenshot-window = _: { };
+
+        "Mod+Shift+Slash".show-hotkey-overlay = _: { };
+
+        "Mod+Escape" = _: {
+          props.allow-inhibiting = false;
+          content.toggle-keyboard-shortcuts-inhibit = _: { };
+        };
+
+        "Mod+Shift+E".quit = _: { };
+
         "XF86AudioRaiseVolume".spawn-sh = "wpctl set-volume -l 1.4 @DEFAULT_AUDIO_SINK@ 5%+";
         "XF86AudioLowerVolume".spawn-sh = "wpctl set-volume -l 1.4 @DEFAULT_AUDIO_SINK@ 5%-";
         "XF86AudioMute".spawn-sh = "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
       };
 
       layout = {
-        gaps = 5;
+        gaps = 8;
         focus-ring = {
-          width = 2;
+          width = 3;
           active-color = "${self.themeNoHash.base08}";
+        };
+        shadow = {
+          on = _: { };
+          softness = 30;
+          spread = 6;
+          offset = _: {
+            props = {
+              x = 0;
+              y = 4;
+            };
+          };
+          color = "#0008";
         };
       };
 
+      hotkey-overlay = {
+        # Uncomment to disable the startup hotkey popup once you know them.
+        # skip-at-startup = _: { };
+      };
+
+      # Uncomment once you're comfortable with the path.
+      # "screenshot-path" = "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png";
+
+      window-rules = [
+        {
+          matches = [ { app-id = "firefox$"; title = "^Picture-in-Picture$"; } ];
+          open-floating = true;
+        }
+        # Uncomment for rounded corners on all windows.
+        # (Works cleanly with prefer-no-csd — niri knows exact geometry.)
+        # {
+        #   geometry-corner-radius = 12;
+        #   clip-to-geometry = true;
+        # }
+        # Block password managers from screen capture.
+        # {
+        #   matches = [ { app-id = "^org\\.keepassxc\\.KeePassXC$"; } ];
+        #   block-out-from = "screen-capture";
+        # }
+        # {
+        #   matches = [ { app-id = "^org\\.gnome\\.World\\.Secrets$"; } ];
+        #   block-out-from = "screen-capture";
+        # }
+      ];
+
       workspaces = {
-        "w0" = { layout.gaps = 5; };
-        "w1" = { layout.gaps = 5; };
-        "w2" = { layout.gaps = 5; };
-        "w3" = { layout.gaps = 5; };
-        "w4" = { layout.gaps = 5; };
+        "w0" = { };
+        "w1" = { };
+        "w2" = { };
+        "w3" = { };
+        "w4" = { };
       };
     };
   };

@@ -26,6 +26,8 @@
       url = "github:vicinaehq/vicinae";
       # Don't follow nixpkgs — vicinae's binary cache is tied to their pin
     };
+
+    tuigreet.url = "github:NotAShelf/tuigreet/0.11.0";
   };
 
   # Import all .nix files from current directory except flake.nix recursively
