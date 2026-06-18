@@ -17,7 +17,7 @@
     };
 
     config.settings = {
-      prefer-no-csd = null;
+      prefer-no-csd = _: { };
 
       input = {
         keyboard = {
@@ -25,26 +25,26 @@
           repeat-rate = 40;
           repeat-delay = 250;
         };
-        touchpad.natural-scroll = null;
+        touchpad.natural-scroll = _: { };
         mouse.accel-profile = "flat";
       };
 
       binds = {
         "Mod+Space".spawn-sh = "vicinae toggle";
         "Mod+Return".spawn = config.terminal;
-        "Mod+Q".close-window = null;
-        "Mod+F".maximize-column = null;
-        "Mod+Shift+F".fullscreen-window = null;
+        "Mod+Q".close-window = _: { };
+        "Mod+F".maximize-column = _: { };
+        "Mod+Shift+F".fullscreen-window = _: { };
 
-        "Mod+H".focus-column-left = null;
-        "Mod+L".focus-column-right = null;
-        "Mod+K".focus-window-up = null;
-        "Mod+J".focus-window-down = null;
+        "Mod+H".focus-column-left = _: { };
+        "Mod+L".focus-column-right = _: { };
+        "Mod+K".focus-window-up = _: { };
+        "Mod+J".focus-window-down = _: { };
 
-        "Mod+Shift+H".move-column-left = null;
-        "Mod+Shift+L".move-column-right = null;
-        "Mod+Shift+K".move-window-up = null;
-        "Mod+Shift+J".move-window-down = null;
+        "Mod+Shift+H".move-column-left = _: { };
+        "Mod+Shift+L".move-column-right = _: { };
+        "Mod+Shift+K".move-window-up = _: { };
+        "Mod+Shift+J".move-window-down = _: { };
 
         "Mod+1".focus-workspace = "w0";
         "Mod+2".focus-workspace = "w1";
