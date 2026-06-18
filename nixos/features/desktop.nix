@@ -11,6 +11,7 @@
 
     environment.systemPackages = [
       selfpkgs.terminal
+      selfpkgs.vicinae
       pkgs.firefox
       pkgs.wl-clipboard
     ];

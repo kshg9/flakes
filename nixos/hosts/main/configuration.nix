@@ -37,7 +37,7 @@
 
       boot.kernelPackages = pkgs.linuxPackages_latest;
 
-      networking.hostName = "athena";
+      networking.hostName = "main";
       networking.networkmanager.enable = true;
 
       nixpkgs.config.allowUnfree = true;

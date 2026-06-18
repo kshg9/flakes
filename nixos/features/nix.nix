@@ -30,7 +30,7 @@
     programs.nh = {
       enable = true;
       clean.enable = true;
-      flake = "/etc/nixos/zinx";
+      flake = "/etc/nixos/nyx";
     };
 
     environment.systemPackages = with pkgs; [
