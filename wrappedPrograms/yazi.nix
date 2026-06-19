@@ -10,7 +10,6 @@
       imports = [ wlib.wrapperModules.yazi ];
 
       settings.yazi = {
-        "enable-fish-integration" = true;
         mgr = {
           "sort-by" = "alphabetical";
           "sort-dir-first" = true;
@@ -57,6 +56,20 @@
         wl-clipboard = wl-clipboard;
       };
 
-      constructFiles = { };
+      constructFiles = {
+        fishYFunction = {
+          relPath = "share/fish/vendor_functions.d/y.fish";
+          content = ''
+            function y
+                set tmp (mktemp -t "yazi-cwd.XXXXXX")
+                yazi --cwd-file="$tmp"
+                if set cwd (command cat -- "$tmp"); and test -n "$cwd"; and test "$cwd" != "$PWD"
+                    builtin cd -- "$cwd"
+                end
+                rm -f -- "$tmp"
+            end
+          '';
+        };
+      };
     };
 }

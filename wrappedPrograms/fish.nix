@@ -8,22 +8,21 @@
     imports = [ wlib.wrapperModules.fish ];
 
     configFile.content = ''
-      function fish_prompt
-          set -l color_user "${self.theme.base08}"
-          set -l color_host "${self.theme.base0B}"
-          set -l color_cwd "${self.theme.base0D}"
+      function fish_right_prompt
+          set -l color_duration "${self.theme.base0C}"
           set -l color_reset (set_color normal)
 
-          printf '%s[%s%s%s@%s%s%s %s%s%s]%s $ ' \
-              (set_color $color_user) \
-              (set_color --bold $color_user) $USER $color_reset \
-              (set_color --bold $color_host) $hostname $color_reset \
-              (set_color --bold $color_cwd) (prompt_pwd) $color_reset \
-              $color_reset
+          if test $CMD_DURATION -gt 0
+              if test $CMD_DURATION -lt 1000
+                  printf '%s%dms%s' (set_color $color_duration) $CMD_DURATION $color_reset
+              else
+                  set -l secs (math -s 2 "$CMD_DURATION / 1000")
+                  printf '%s%ss%s' (set_color $color_duration) $secs $color_reset
+              end
+          end
       end
 
-      set fish_greeting
-      fish_vi_key_bindings
+      set fish_color_autosuggestion "${self.theme.base04}"
 
       ${lib.getExe pkgs.zoxide} init fish | source
     '';

@@ -7,13 +7,15 @@
     ];
 
     programs.niri.enable = true;
-    programs.niri.package = selfpkgs.desktop;
+    programs.niri.package = selfpkgs.niri;
 
     environment.systemPackages = [
       selfpkgs.terminal
       selfpkgs.vicinae
       pkgs.firefox
       pkgs.wl-clipboard
+      pkgs.brightnessctl
+      pkgs.bibata-cursors
     ];
 
     fonts.packages = with pkgs; [

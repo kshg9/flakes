@@ -20,6 +20,11 @@
       pkgs.wl-clipboard
       selfpkgs.neovim
       selfpkgs.yazi
+      selfpkgs.qalc
+    ];
+    plugins = [
+      { src = selfpkgs.yazi; }
+      { src = pkgs.fishPlugins.hydro; }
     ];
     env.EDITOR = lib.getExe selfpkgs.neovim;
   };
@@ -31,10 +36,4 @@
     shell = lib.getExe selfpkgs.environment;
   };
 
-  flake.wrappers.desktop = { pkgs, ... }: let
-    selfpkgs = self.packages."${pkgs.stdenv.hostPlatform.system}";
-  in {
-    imports = [ self.wrapperModules.niri ];
-    terminal = lib.getExe selfpkgs.terminal;
-  };
 }

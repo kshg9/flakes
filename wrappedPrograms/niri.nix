@@ -11,13 +11,15 @@
   }: {
     imports = [ wlib.wrapperModules.niri ];
 
-    options.terminal = lib.mkOption {
-      type = lib.types.str;
-      default = "kitty";
-    };
+    config.env.NIRI_CONFIG = lib.mkForce "";
 
     config.settings = {
       prefer-no-csd = _: { };
+
+      cursor = {
+        "xcursor-theme" = "Bibata-Modern-Ice";
+        "xcursor-size" = 24;
+      };
 
       input = {
         keyboard = {
@@ -33,12 +35,19 @@
         mouse.accel-profile = "flat";
       };
 
+      spawn-at-startup = [ [ "vicinae" "server" ] ];
+
       binds = {
         "Mod+Space".spawn-sh = "vicinae toggle";
-        "Mod+Return".spawn = config.terminal;
+        "Mod+Return".spawn = "kitty";
         "Mod+Q".close-window = _: { };
         "Mod+F".maximize-column = _: { };
         "Mod+Shift+F".fullscreen-window = _: { };
+
+        "Mod+P" = _: {
+          props.repeat = false;
+          content.spawn = [ "vicinae" "vicinae://launch/clipboard/history" ];
+        };
 
         "Mod+H".focus-column-left = _: { };
         "Mod+L".focus-column-right = _: { };
@@ -88,6 +97,15 @@
         "XF86AudioRaiseVolume".spawn-sh = "wpctl set-volume -l 1.4 @DEFAULT_AUDIO_SINK@ 5%+";
         "XF86AudioLowerVolume".spawn-sh = "wpctl set-volume -l 1.4 @DEFAULT_AUDIO_SINK@ 5%-";
         "XF86AudioMute".spawn-sh = "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
+
+        "XF86MonBrightnessUp" = _: {
+          props.allow-when-locked = true;
+          content.spawn = [ "brightnessctl" "set" "+5%" ];
+        };
+        "XF86MonBrightnessDown" = _: {
+          props.allow-when-locked = true;
+          content.spawn = [ "brightnessctl" "set" "5%-" ];
+        };
       };
 
       layout = {
@@ -143,9 +161,6 @@
       workspaces = {
         "w0" = { };
         "w1" = { };
-        "w2" = { };
-        "w3" = { };
-        "w4" = { };
       };
     };
   };
