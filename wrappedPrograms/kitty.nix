@@ -1,5 +1,4 @@
 {
-  self,
   lib,
   ...
 }: {
@@ -7,7 +6,23 @@
     wlib,
     config,
     ...
-  }: {
+  }: let
+    theme = {
+      base00 = "#1f1f28";
+      base01 = "#2a2a37";
+      base02 = "#223249";
+      base03 = "#363646";
+      base04 = "#54546d";
+      base05 = "#dcd7ba";
+      base06 = "#e6c384";
+      base08 = "#e46876";
+      base0A = "#e6c384";
+      base0B = "#98bb6c";
+      base0C = "#7aa89f";
+      base0D = "#7e9cd8";
+      base0E = "#957fb8";
+    };
+  in {
     imports = [ wlib.wrapperModules.kitty ];
 
     options.shell = lib.mkOption {
@@ -19,10 +34,10 @@
       settings = {
         term = "xterm-kitty";
 
-        font_family = "JetBrainsMono Nerd Font";
-        bold_font = "auto";
-        italic_font = "auto";
-        bold_italic_font = "auto";
+        font_family = "CommitMono Nerd Font Mono";
+        bold_font = "CommitMono Nerd Font Mono";
+        italic_font = "CommitMono Nerd Font Mono";
+        bold_italic_font = "CommitMono Nerd Font Mono";
         font_size = 13;
         disable_ligatures = "never";
 
@@ -39,7 +54,7 @@
         cursor_shape = "block";
         cursor_blink_interval = 0;
         cursor_text_color = "background";
-        cursor = self.theme.base0B;
+        cursor = theme.base0B;
 
         scrollback_lines = 10000;
         scrollback_pager = "nvim -c 'setlocal buftype=nofile nonumber norelativenumber' -";
@@ -48,40 +63,40 @@
         tab_bar_style = "powerline";
         tab_powerline_style = "slanted";
         tab_bar_min_tabs = 1;
-        tab_bar_background = self.theme.base00;
+        tab_bar_background = theme.base00;
 
         tab_title_template = " {index}: {title} ";
 
-        active_tab_foreground = self.theme.base00;
-        active_tab_background = self.theme.base0A;
+        active_tab_foreground = theme.base00;
+        active_tab_background = theme.base0A;
         active_tab_font_style = "bold";
 
-        inactive_tab_foreground = self.theme.base04;
-        inactive_tab_background = self.theme.base01;
+        inactive_tab_foreground = theme.base04;
+        inactive_tab_background = theme.base01;
         inactive_tab_font_style = "normal";
 
         background_opacity = "0.95";
-        background = self.theme.base00;
-        foreground = self.theme.base05;
-        selection_foreground = self.theme.base06;
-        selection_background = self.theme.base03;
+        background = theme.base00;
+        foreground = theme.base05;
+        selection_foreground = theme.base06;
+        selection_background = theme.base03;
 
-        color0 = self.theme.base00;
-        color8 = self.theme.base02;
-        color1 = self.theme.base08;
-        color9 = self.theme.base08;
-        color2 = self.theme.base0B;
-        color10 = self.theme.base0B;
-        color3 = self.theme.base0A;
-        color11 = self.theme.base0A;
-        color4 = self.theme.base0D;
-        color12 = self.theme.base0D;
-        color5 = self.theme.base0E;
-        color13 = self.theme.base0E;
-        color6 = self.theme.base0C;
-        color14 = self.theme.base0C;
-        color7 = self.theme.base03;
-        color15 = self.theme.base04;
+        color0 = theme.base00;
+        color8 = theme.base02;
+        color1 = theme.base08;
+        color9 = theme.base08;
+        color2 = theme.base0B;
+        color10 = theme.base0B;
+        color3 = theme.base0A;
+        color11 = theme.base0A;
+        color4 = theme.base0D;
+        color12 = theme.base0D;
+        color5 = theme.base0E;
+        color13 = theme.base0E;
+        color6 = theme.base0C;
+        color14 = theme.base0C;
+        color7 = theme.base03;
+        color15 = theme.base04;
 
         repaint_delay = 8;
         input_delay = 1;

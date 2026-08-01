@@ -1,5 +1,5 @@
 {
-  flake.nixosModules.hostMain =
+  flake.nixosModules.hostUriel =
     {
       config,
       lib,
@@ -19,13 +19,6 @@
         "usbhid"
         "usb_storage"
         "sd_mod"
-      ];
-
-      boot.initrd.kernelModules = [
-        "nvidia"
-        "nvidia_modeset"
-        "nvidia_drm"
-        "nvidia_uvm"
       ];
 
       boot.kernelModules = [ "kvm-amd" ];

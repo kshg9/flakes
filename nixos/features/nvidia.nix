@@ -7,16 +7,14 @@
       ...
     }:
     {
-      nix.settings = {
-        substituters = [
-          "https://cache.nixos-cuda.org"
-        ];
-        trusted-public-keys = [
-          "cache.nixos-cuda.org:74DUi4Ye579gUqzH4ziL9IyiJBlDpMRn9MBN8oNan9M="
-        ];
-      };
-
       services.xserver.videoDrivers = [ "nvidia" ];
+
+      boot.initrd.kernelModules = [
+        "nvidia"
+        "nvidia_modeset"
+        "nvidia_drm"
+        "nvidia_uvm"
+      ];
 
       nixpkgs.config.cudaSupport = true;
 

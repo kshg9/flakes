@@ -18,7 +18,7 @@
       pkgs.zoxide
       pkgs.just
       pkgs.wl-clipboard
-      selfpkgs.neovim
+      pkgs.helix
       selfpkgs.yazi
       selfpkgs.qalc
     ];
@@ -26,13 +26,14 @@
       { src = selfpkgs.yazi; }
       { src = pkgs.fishPlugins.hydro; }
     ];
-    env.EDITOR = lib.getExe selfpkgs.neovim;
+    env.EDITOR = lib.getExe pkgs.helix;
   };
 
   flake.wrappers.terminal = { pkgs, ... }: let
     selfpkgs = self.packages."${pkgs.stdenv.hostPlatform.system}";
   in {
     imports = [ self.wrapperModules.kitty ];
+    binName = "terminal";
     shell = lib.getExe selfpkgs.environment;
   };
 

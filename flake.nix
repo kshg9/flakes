@@ -22,12 +22,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    vicinae = {
-      url = "github:vicinaehq/vicinae";
-      # Don't follow nixpkgs — vicinae's binary cache is tied to their pin
-    };
-
-    tuigreet.url = "github:NotAShelf/tuigreet/0.11.0";
+    vicinae.url = "github:vicinaehq/vicinae";
   };
 
   # Import all .nix files from current directory except flake.nix recursively
@@ -43,5 +38,10 @@
 
       mkFlake = inputs.flake-parts.lib.mkFlake { inherit inputs; };
     in
-    mkFlake { imports = importTree ./.; };
+    mkFlake {
+      imports = importTree ./.
+        # enables the `flake.wrappers.*` option used by wrappedPrograms/
+        ++ [ inputs.wrapper-modules.flakeModules.wrappers ];
+      systems = [ "x86_64-linux" ];
+    };
 }

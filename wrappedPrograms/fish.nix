@@ -1,4 +1,4 @@
-{ self, ... }: {
+{ ... }: {
   flake.wrappers.fish = {
     wlib,
     pkgs,
@@ -9,7 +9,7 @@
 
     configFile.content = ''
       function fish_right_prompt
-          set -l color_duration "${self.theme.base0C}"
+          set -l color_duration "#7aa89f"
           set -l color_reset (set_color normal)
 
           if test $CMD_DURATION -gt 0
@@ -22,7 +22,7 @@
           end
       end
 
-      set fish_color_autosuggestion "${self.theme.base04}"
+      set fish_color_autosuggestion "#54546d"
 
       ${lib.getExe pkgs.zoxide} init fish | source
     '';

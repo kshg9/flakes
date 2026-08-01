@@ -1,0 +1,26 @@
+# Allowlist .gitignore: ignore everything that isn't an explicit source type.
+# This keeps build artifacts, symlinks (e.g. result), images, and junk out of
+# the flake source (fileset = git-tracked files).
+# NOTE: gitignore only affects untracked files; already-tracked files are unaffected.
+
+# IMPORTANT: the flake source = git-tracked files. Any SOURCE file type you import
+# that is NOT allowlisted below is silently invisible to the flake (eval/build break
+# with no git clue). If you adapt a config that brings a new source type, ADD IT HERE.
+
+# Ignore everything by default
+*
+
+# Re-include directories so git descends into them
+!*/
+
+# Source / config / docs to track
+!*.nix
+!*.sh
+!*.lock
+!*.md
+
+# Extension-less files
+!justfile
+
+# VCS config
+!.gitignore

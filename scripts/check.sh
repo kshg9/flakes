@@ -13,10 +13,10 @@ else
   exit 1
 fi
 
-echo "=== Dry-run of system build (.#main) ==="
+echo "=== Dry-run of system build (.#uriel) ==="
 sudo nix --extra-experimental-features "nix-command flakes" build --dry-run --no-write-lock-file \
   --option extra-substituters "https://nix-community.cachix.org https://vicinae.cachix.org https://cache.nixos-cuda.org" \
   --option extra-trusted-public-keys "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs= vicinae.cachix.org-1:1kDrfienkGHPYbkpNj1mWTr7Fm1+zcenzgTizIcI3oc= cache.nixos-cuda.org:74DUi4Ye579gUqzH4ziL9IyiJBlDpMRn9MBN8oNan9M=" \
-  '.#nixosConfigurations.main.config.system.build.toplevel'
+  '.#nixosConfigurations.uriel.config.system.build.toplevel'
 
 echo "=== Done ==="

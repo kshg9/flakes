@@ -6,7 +6,7 @@
       ...
     }:
     let
-      cfg = config.persistance;
+      cfg = config.persistence;
     in
     {
       imports = [

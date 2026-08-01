@@ -3,7 +3,7 @@
     options.preferences = {
       user.name = lib.mkOption {
         type = lib.types.str;
-        default = "ksh";
+        default = "kdj";
       };
     };
   };

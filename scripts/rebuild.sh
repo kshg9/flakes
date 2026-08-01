@@ -5,7 +5,7 @@ set -euo pipefail
 echo "=== Checking flake ==="
 nix flake check
 
-echo "=== Rebuilding (.#main) ==="
-sudo nixos-rebuild switch --flake ".#main"
+echo "=== Rebuilding (.#uriel) ==="
+sudo nixos-rebuild switch --flake ".#uriel"
 
 echo "=== Done ==="

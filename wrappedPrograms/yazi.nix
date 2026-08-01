@@ -39,14 +39,6 @@
               run = "plugin wl-clipboard";
               desc = "Copy to clipboard (Wayland)";
             }
-            {
-              on = [
-                "c"
-                "d"
-              ];
-              run = "shell -- kitten dnd %c";
-              desc = "Kitty drag-n-drop selected file(s)";
-            }
           ];
         };
       };
@@ -62,11 +54,11 @@
           content = ''
             function y
                 set tmp (mktemp -t "yazi-cwd.XXXXXX")
-                yazi --cwd-file="$tmp"
-                if set cwd (command cat -- "$tmp"); and test -n "$cwd"; and test "$cwd" != "$PWD"
+                command yazi $argv --cwd-file="$tmp"
+                if read -z cwd < "$tmp"; and [ "$cwd" != "$PWD" ]; and test -d "$cwd"
                     builtin cd -- "$cwd"
                 end
-                rm -f -- "$tmp"
+                command rm -f -- "$tmp"
             end
           '';
         };
