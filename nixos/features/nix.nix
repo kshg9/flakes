@@ -26,7 +26,7 @@
     programs.nh = {
       enable = true;
       clean.enable = true;
-      flake = "/etc/nixos/nyx";
+      flake = "/etc/nixos/flakes";
     };
 
     environment.systemPackages = with pkgs; [

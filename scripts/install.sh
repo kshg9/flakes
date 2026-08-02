@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-FLAKE_ROOT="/mnt/persist/system/etc/nixos/nyx"
+FLAKE_ROOT="/mnt/persist/system/etc/nixos/flakes"
 
 if [ ! -d "$FLAKE_ROOT" ]; then
   echo "ERROR: Flake not found at $FLAKE_ROOT. Run 'just disko' first." >&2

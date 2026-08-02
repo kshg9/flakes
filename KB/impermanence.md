@@ -50,6 +50,27 @@ must:
 Verified in the VM: `Rollback BTRFS root subvolume to a pristine state` finishes, then
 all persisted subvolumes mount.
 
+## Passwords under impermanence
+
+`passwd` writes to `/etc/shadow`, which `nukeRoot` wipes every boot — so normal
+password changes never survive. Instead:
+
+- the hash lives at `/persist/passwords/<user>` (on the persisted subvol);
+- the host sets `users.users.<name>.hashedPasswordFile = "/persist/passwords/<user>"`.
+  NixOS reads that file **each activation** (update-users-groups.pl), and since
+  `/etc/shadow` is wiped, the account is recreated fresh every boot → the file
+  hash is always applied. (`hashedPasswordFile` on its own = no NixOS warning;
+  combining it with `initialHashedPassword` triggers the "multiple password
+  options" warning.)
+- **change the password with `changepass`** (`packages/changepass.nix`, on the
+  system via `general.nix`): prompts like `passwd`, writes the new hash to
+  `/persist/passwords/<user>` AND applies it to the live `/etc/shadow` via
+  `chpasswd -e` (no reboot needed). Run with `sudo`. Supports
+  `--root CHROOT_DIR` (used by the installer to seed `/mnt/persist/passwords`).
+- **bootstrap**: the `urielOS` installer calls `changepass --root /mnt <user>`
+  during install, seeding `/mnt/persist/passwords/<user>`, so a fresh ISO
+  install boots with a known login.
+
 ## LUKS name
 
 LUKS device is named `enc` (from `disko.nix`). Used in:

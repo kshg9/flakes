@@ -36,12 +36,19 @@ Set as `environment.shellAliases.urielOS` (a `writeShellScript`). On the live IS
 ```bash
 urielOS [target] [user]
 #  target: config to install     (default uriel)
-#  user:   password to set       (default kdj)
+#  user:   initial password seed (default kdj)
 #
 #  1. sudo disko --mode destroy,format,mount --flake /nixos#<target>
-#  2. sudo nixos-install --flake /nixos#<target>
-#  3. sudo passwd --root /mnt <user>       # set real password
-#  4. copy /nixos → /mnt/home/<user>/flakes  # keep the config on the box
+#  2. sudo nixos-install --no-root-passwd --flake /nixos#<target>
+#  3. copy /nixos → /mnt/persist/system/etc/nixos/flakes
+#     (persisted subvol; bind-mounted to /etc/nixos/flakes on boot, where
+#     `nh` and the scripts expect the flake)
+#  4. `changepass --root /mnt <user>` → prompts, writes hash to
+#     /persist/passwords/<user> (persists across nukeRoot; the host's
+#     hashedPasswordFile re-applies it every boot). Later changes: `changepass`.
+#
+#  To work on the config, git-clone over the seed:
+#  rm -rf /etc/nixos/flakes && git clone <repo> /etc/nixos/flakes
 ```
 
 Each machine gets its own hardened disko config (`nixos/hosts/<target>/disko.nix`, disk

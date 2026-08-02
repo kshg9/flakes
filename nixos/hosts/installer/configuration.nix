@@ -21,6 +21,9 @@ in
       modulesPath,
       ...
     }:
+    let
+      selfpkgs = self.packages.${pkgs.stdenv.hostPlatform.system};
+    in
     {
       imports = [
         # official NixOS graphical installer CD, birdee-style: X server + gparted/
@@ -73,32 +76,38 @@ in
         show-trace = true;
       };
 
-      # pinned disko + terminals on PATH (kitty/tmux for the live session)
+      # pinned disko + terminals/editor on PATH (kitty/tmux for the live session)
+      # selfpkgs.changepass brings whois (`mkpasswd`) + shadow (`chpasswd`) along
       environment.systemPackages = [
         inputs.disko.packages.${pkgs.stdenv.hostPlatform.system}.disko
         pkgs.kitty
         pkgs.tmux
+        pkgs.neovim
+        selfpkgs.changepass
       ];
 
       # one-shot installer. Usage: urielOS [target] [user]
       #   target: flake config to install (default uriel)
-      #   user:   account to set a password for (default kdj)
+      #   user:   account to seed an initial password for (default kdj)
       #   each machine has its own disko config (`nixos/hosts/<target>/disko.nix`)
       #   with the disk hardcoded — no args, no overrides.
       #   the flake source lives at /iso/nixos (the ISO is mounted at /iso).
+      #   Seeds the config at /etc/nixos/flakes (persisted subvol — `nh` and the
+      #   scripts expect it there). To work on it, the user git-clones over it:
+      #   rm -rf /etc/nixos/flakes && git clone <repo> /etc/nixos/flakes.
+      #   Initial password seeded via `changepass --root /mnt` → writes
+      #   /persist/passwords/<user> (persists across nukeRoot; the host config's
+      #   hashedPasswordFile re-applies it every boot). Later changes: `changepass`.
       environment.shellAliases = {
         urielOS = "${pkgs.writeShellScript "urielOS" ''
           set -e
           target=''${1:-uriel}
           username=''${2:-kdj}
           sudo disko --mode destroy,format,mount --flake /iso/nixos#"$target"
-          sudo nixos-install --flake /iso/nixos#"$target"
-          echo "set a password for user $username"
-          sudo passwd --root /mnt "$username"
-          mkdir -p "/mnt/home/$username"
-          cp -r /iso/nixos "/mnt/home/$username/flakes"
-          sudo chmod -R go-rwx "/mnt/home/$username/flakes"
-          sudo chown -R "$username:users" "/mnt/home/$username/flakes"
+          sudo nixos-install --no-root-passwd --flake /iso/nixos#"$target"
+          mkdir -p /mnt/persist/system/etc/nixos
+          cp -r /iso/nixos /mnt/persist/system/etc/nixos/flakes
+          sudo changepass --root /mnt "$username"
         ''}";
       };
     };

@@ -41,11 +41,13 @@
       networking.hostName = "uriel";
       networking.networkmanager.enable = true;
 
-      # One-shot password for fresh installs (only applied when the account is
-      # created — the existing /etc/shadow entry is never touched). Needed so a
-      # fresh ISO install of this config has a known login.
-      users.users.${config.preferences.user.name}.initialHashedPassword =
-        "$6$aorCtl5jemLLfqb.$30PzcF8DguLUfiZyeeORKTPCLnDPErl9G6QEYtWK44yTyKw0PMD4g3EjknNgMOTMguy.QcU8MBUGt.usregvH1";
+      # Password lives in a file on the persisted subvol (/persist/passwords/kdj),
+      # read by update-users-groups on every boot — impermanence wipes /etc/shadow,
+      # so the account is recreated fresh and this hash is always applied. The
+      # urielOS installer seeds that file (first password); afterwards change it
+      # with the `changepass` command (updates the file + /etc/shadow now).
+      users.users.${config.preferences.user.name}.hashedPasswordFile =
+        "/persist/passwords/${config.preferences.user.name}";
 
       nixpkgs.config.allowUnfree = true;
 
