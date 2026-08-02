@@ -41,7 +41,9 @@
     mkFlake {
       imports = importTree ./.
         # enables the `flake.wrappers.*` option used by wrappedPrograms/
-        ++ [ inputs.wrapper-modules.flakeModules.wrappers ];
+        ++ [ inputs.wrapper-modules.flakeModules.wrappers ]
+        # declares `flake.diskoConfigurations` so multiple hosts can define it
+        ++ [ inputs.disko.flakeModules.default ];
       systems = [ "x86_64-linux" ];
     };
 }

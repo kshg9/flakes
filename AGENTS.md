@@ -51,8 +51,11 @@ nix --extra-experimental-features 'nix-command flakes' eval '.#nixosConfiguratio
 # build
 nix --extra-experimental-features 'nix-command flakes' build -L '.#nixosConfigurations.uriel.config.system.build.toplevel'
 
-# VM (full disk-stack test)
-nix run -L '.#nixosConfigurations.uriel.config.system.build.vmWithDisko'
+# VM (plain build-vm experiment box, no disk stack)
+nixos-rebuild build-vm --flake '.#sandbox' && ./result/bin/run-vm-sandbox
+
+# installer ISO (Calamares, embeds flake source) — see KB/installer-iso.md
+scripts/build-iso.sh
 
 # toggle extras OFF/ON
 git mv nixos/features/extras.nix nixos/features/_extras.nix   # OFF
@@ -65,8 +68,12 @@ git add -A
 ## Current state (verified 2026-08-02)
 
 - nixpkgs `nixos-unstable` rev `567a49d`; disko `ff8702b4` (master); 26.11 era
-- host: single config `uriel`; extras toggle currently **OFF** (`_extras.nix`)
-- `vmWithDisko` is fixed and boots (see `KB/vm-testing.md`)
+- host: real machine `uriel` (disko + impermanence + extras toggle OFF)
+- test machine: `sandbox` — clean build-vm experiment box (no disko/LUKS/impermanence),
+  for hyprland/niri/kde/hjem experiments (see `KB/vm-testing.md`)
+- installer: `installer` — minimal graphical installer ISO (no Calamares, no DE; boots into a
+  fullscreen kitty+tmux session via the vendored `packages/maximizer/`) that embeds this
+  flake's source (`urielOS` alias = disko + nixos-install; see `KB/installer-iso.md`)
 - build artifacts `result`/`*.qcow2` are gitignored — don't stage them
 
 ## When I learn something new

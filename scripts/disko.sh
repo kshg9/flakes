@@ -4,10 +4,10 @@ set -euo pipefail
 
 FLAKE_ROOT="${FLAKE_ROOT:-$(pwd)}"
 
-echo "=== Partitioning disk with disko (.#hostUriel) ==="
+echo "=== Partitioning disk with disko (.#uriel) ==="
 nix --extra-experimental-features "nix-command flakes" \
   run github:nix-community/disko/latest -- \
-  --mode destroy,format,mount --flake ".#hostUriel"
+  --mode destroy,format,mount --flake ".#uriel"
 
 echo "=== Setting root-blank subvolume read-only ==="
 mkdir -p /tmp/btrfs_mnt

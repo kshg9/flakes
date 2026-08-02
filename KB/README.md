@@ -13,12 +13,14 @@ Current environment (verified 2026-08-02):
 
 | File | Topic |
 | --- | --- |
-| [vm-testing.md](vm-testing.md) | Running the full config in a VM (`vmWithDisko`), the vmTools kernel error and its workaround, verified boot |
+| [vm-testing.md](vm-testing.md) | The plain build-vm `vm` experiment host; archived vmWithDisko/vmTools lessons |
 | [disko.md](disko.md) | disko specifics: LUKS test password, imageSize, keyfile, image builder options |
 | [module-toggle.md](module-toggle.md) | The `_`-prefix toggle convention and how `importTree`/`fileFilter` works |
 | [terminal-wrapper.md](terminal-wrapper.md) | The `flake.wrappers.terminal` facade, `binName`, and the `selfpkgs` pattern |
 | [impermanence.md](impermanence.md) | Rollback service, LUKS interplay, VM `neededForBoot` requirements |
 | [gotchas.md](gotchas.md) | Non-obvious pitfalls and their fixes (assertions, fileset, artifacts) |
+| [birdee-inspiration.md](birdee-inspiration.md) | Ideas worth stealing from `~/reference/birdeeSystems` (wrapper splat, disko wrapper pkgs, configsPerSystem) |
+| [installer-iso.md](installer-iso.md) | Calamares installer ISO (`installer` host), embedded flake source, the `urielOS` one-shot install alias |
 
 ## Commands that matter
 
@@ -26,13 +28,12 @@ Current environment (verified 2026-08-02):
 # full config eval check (fast)
 nix eval .#nixosConfigurations.uriel.config.system.build.toplevel.drvPath
 
-# VM disk image + interactive VM, headless serial on stdout
-nix run -L .#nixosConfigurations.uriel.config.system.build.vmWithDisko
+# experiment VM (plain build-vm, no disk stack) — build + boot
+nixos-rebuild build-vm --flake .#sandbox
+./result/bin/run-vm-sandbox
 
-# build without launching
-nix build -L --no-link --print-out-paths .#nixosConfigurations.uriel.config.system.build.vmWithDisko
-
-# just the raw disk image (base config, no vmVariantWithDisko overrides)
+# just the raw disk image for the real machine (archived vmWithDisko note:
+# building diskoImages directly never got the imageBuilder override)
 nix build -L .#nixosConfigurations.uriel.config.system.build.diskoImages
 
 # eval a single attribute with a specific input pinned

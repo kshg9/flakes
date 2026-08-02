@@ -18,6 +18,7 @@
 !*.sh
 !*.lock
 !*.md
+!*.c
 
 # Extension-less files
 !justfile

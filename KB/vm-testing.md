@@ -1,10 +1,78 @@
-# VM Testing (`vmWithDisko`)
+# VM Testing (`sandbox` host, plain build-vm)
 
-Goal: boot the **entire real config** (disko layout + LUKS + impermanence) in a QEMU VM
-to validate the disk stack end-to-end. Plain `build-vm` cannot do this — it attaches an
+The dedicated `sandbox` host is a **clean, disposable experiment box** — no disko, no LUKS,
+no impermanence. Its purpose is fast iteration on declarative desktop experiments
+(hyprland, niri, kde/plasma, home-manager/hjem variants, plasma-manager→hjem ports, etc.):
+get a clean OS, turn the experimental module on, see if it evals + boots. Nothing it does
+can touch `uriel`'s disk stack.
+
+## Setup (`nixos/hosts/sandbox/configuration.nix`)
+
+- Same module set as uriel minus the disk stack and extras:
+  `base/general/desktop/nix/keyd`. No `inputs.disko`, no `impermanence`.
+- `hardware-configuration.nix` = `modulesPath + "/profiles/qemu-guest.nix"` + virtio
+  kernel modules. No real hardware.
+- Plain disk: `virtualisation.memorySize = 4096`, `virtualisation.diskSize = 40960`
+  (MB). The VM tooling creates and formats the disk itself — no disko involved.
+- `modulesPath + "/virtualisation/qemu-vm.nix"` is imported directly so the
+  `virtualisation.*` options are declared at base level and `system.build.vm` is a
+  buildable flake output (see `KB/birdee-inspiration.md` note on VM approach).
+
+## Run
+
+```bash
+nixos-rebuild build-vm --flake .#sandbox   # builds config + VM wrapper
+./result/bin/run-vm-sandbox                # boots a QEMU window (KDE via desktop module)
+```
+
+`qemu-vm.nix` is imported directly into the host, so `system.build.vm` is a normal
+flake output — no `nixos-rebuild` magic required:
+```bash
+nix build .#nixosConfigurations.sandbox.config.system.build.vm   # → result, run ./result/bin/run-vm-sandbox
+```
+
+State is ephemeral per run — a broken experiment is discarded by closing the VM and
+rebuilding. For scripted runs, uncomment in the host config:
+```nix
+virtualisation.graphics = false;
+boot.kernelParams = [ "console=ttyS0,115200n8" ];
+```
+
+## Gotcha: VM login password
+
+`initialHashedPassword` is **one-shot, applied only at account creation**
+(`update-users-groups.pl`: existing users take the `if (defined $existing)` branch and
+their `/etc/shadow` entry is never touched; only new accounts get the config hash).
+On uriel, `kdj` predates the hash, so the config's hash was dead code there — the VM,
+with a fresh disk, applies it, hence the "unknown" password. Root cause: a shared module
+(`general.nix`) carried a machine-specific secret. Now `general.nix` sets no password;
+each host sets its own. The vm host pins a known dev password (`vm`):
+```nix
+users.users.${config.preferences.user.name}.initialHashedPassword = "…hash of `vm`…";
+```
+
+## Why plain build-vm (vs the old vmWithDisko)
+
+- **Fast**: no LUKS format step, no `disko.imageBuilder` workaround, no image build.
+- **Safe**: cannot mangle `uriel`'s disko/config; the vm host is fully self-contained.
+- The trade-off is that the VM does NOT test the disk/rollback stack — that was already
+  validated and documented below (archived).
+
+---
+
+# ARCHIVED: full disk-stack testing via `vmWithDisko`
+
+Removed 2026-08-02 when `uriel` and `vm` were separated (uriel got the block deleted;
+vm became a plain build-vm box). Keep this knowledge if the disk stack ever needs
+VM-testing again.
+
+## Goal (archived)
+
+Boot the **entire real config** (disko layout + LUKS + impermanence) in a QEMU VM to
+validate the disk stack end-to-end. Plain `build-vm` cannot do this — it attaches an
 empty/impermanent virtual disk and never formats it per `disko.nix`.
 
-## How it works
+## How it worked
 
 `vmWithDisko` comes from disko's `lib/interactive-vm.nix` and is exposed by the disko
 NixOS module as `virtualisation.vmVariantWithDisko` (a `mkOption` whose value is any
@@ -20,26 +88,10 @@ Pipeline (verified in disko source at pinned rev):
    `interactive-vm.nix`, so the LUKS format uses the hardcoded test passphrase (see `disko.md`).
 3. `system.build.vmWithDisko` = a `writeDashBin` script that:
    - `qemu-img create -b <store>/main.qcow2 -F qcow2 "$tmp"/main.qcow2` (copy-on-write overlay)
-   - runs the normal `run-uriel-vm` script against that overlay.
+   - runs the normal `run-<host>-vm` script against that overlay.
 
 So the image is formatted once, then the overlay is booted — state from a failed boot
 can be discarded by rerunning the script.
-
-## Current config (`nixos/hosts/uriel/configuration.nix:52`)
-
-```nix
-virtualisation.vmVariantWithDisko = {
-  disko.memSize = 4096;                       # drives build-VM RAM and interactive VM
-  virtualisation.fileSystems."/persist".neededForBoot = true;  # + /home + /var/log
-  boot.initrd.secrets."/tmp/secret.key" = "${pkgs.writeText "secret.key" "disko"}";
-  boot.initrd.luks.devices.enc.keyFile = "/tmp/secret.key";
-  disko.imageBuilder.pkgs = pkgs.extend (final: prev: {
-    vmTools = prev.vmTools.override (args: args // { kernelImage = "bzImage"; });
-  });
-  virtualisation.graphics = false;            # headless: serial on stdout
-  boot.kernelParams = [ "console=ttyS0,115200n8" ];
-};
-```
 
 ## The vmTools kernel error (the big one)
 
@@ -74,7 +126,7 @@ disko's `lib/make-disk-image.nix` still does `kernel = pkgs.aggregateModules([..
 - `disko.imageBuilder.kernelPackages` does NOT help — it only swaps which kernel is
   aggregated, every post-split kernel still goes through the same broken `aggregateModules`.
 
-### The working workaround (applied)
+### The workaround
 
 Override `disko.imageBuilder.pkgs` so the image builder's `vmTools` gets an explicit
 `kernelImage`. This is the exact mitigation the nixpkgs error message itself suggests,
@@ -90,35 +142,24 @@ Why `bzImage` works: `aggregateModules` is a `buildEnv` over `[kernel, kernel.mo
 so the merged output contains the kernel image at `$out/bzImage` (x86_64). Remove this
 block once disko PR #1170 lands.
 
-## Verified boot markers
+## Verified boot markers (when it was working, 2026-08-02)
 
-Headless boot, capture serial output, then look for these (all confirmed 2026-08-02):
+Headless boot, capture serial output, then look for these:
 
 ```
 Finished Cryptography Setup for enc.        # LUKS unlocked via keyfile, no prompt
 Finished Rollback BTRFS root subvolume to a pristine state.   # impermanence nuke
 Mounted /sysroot/persist                     # + /home, /nix, /var/log
 Reached target Graphical Interface.           # full boot
-uriel login:                                 # login prompt on ttyS0
+<host> login:                                # login prompt on ttyS0
 ```
 
-## Headless vs GUI
-
-| Setting | Effect |
-| --- | --- |
-| `virtualisation.graphics = false` | `-nographic`; serial `ttyS0` on stdout — log/script friendly |
-| `boot.kernelParams = ["console=ttyS0,115200n8"]` | kernel prints boot messages to serial |
-| drop both | normal QEMU window (interactive Plasma poking) |
-
-Headless is the default in this config for scripted verification. If the LUKS keyfile
-ever fails, the password prompt appears on ttyS0 (type `disko`).
-
-## Commands
+## Archived commands
 
 ```bash
-nix run -L .#nixosConfigurations.uriel.config.system.build.vmWithDisko   # build + boot
-nix build -L --no-link --print-out-paths '.#nixosConfigurations.uriel.config.system.build.vmWithDisko'
-timeout 180 <store>/disko-vm/bin/disko-vm > boot.log 2>&1                # capture boot
+nix run -L .#nixosConfigurations.<host>.config.system.build.vmWithDisko
+nix build -L --no-link --print-out-paths '.#nixosConfigurations.<host>.config.system.build.vmWithDisko'
+timeout 180 <store>/disko-vm/bin/disko-vm > boot.log 2>&1
 ```
 
 Note: building `.config.system.build.diskoImages` directly (without the variant) uses

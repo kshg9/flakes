@@ -1,10 +1,9 @@
 {
-  flake.diskoConfigurations.hostUriel = {
+  flake.diskoConfigurations.uriel = {
     disko.devices = {
       disk.main = {
         type = "disk";
         device = "/dev/disk/by-id/nvme-SAMSUNG_MZALQ512HBLU-00BL2_S65DNX1T647774";
-        imageSize = "50G";
         content = {
           type = "gpt";
           partitions = {
