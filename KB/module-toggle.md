@@ -27,7 +27,6 @@ the module **disappears from the flake entirely** — no eval, no build, no impo
   flake.nixosModules.extras = {
     imports = [
       self.nixosModules.nvidia
-      self.nixosModules.printer
       self.nixosModules.vicinae
       self.nixosModules.cachix
     ];
@@ -43,7 +42,9 @@ It's imported conditionally in `nixos/hosts/uriel/configuration.nix`:
 
 **Toggle OFF:** `git mv nixos/features/extras.nix nixos/features/_extras.nix`
 Then `self.nixosModules.extras` is unset, `lib.optional` yields nothing, and the nvidia/
-printer/vicinae/cachix modules are skipped. **Currently OFF** (file is `_extras.nix`).
+vicinae/cachix modules are skipped. **Currently OFF** (file is `_extras.nix`).
+Printer support is not part of extras; `uriel` imports `self.nixosModules.printer`
+directly.
 
 **Toggle ON:** `git mv nixos/features/_extras.nix nixos/features/extras.nix`
 

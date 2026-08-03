@@ -59,6 +59,6 @@ error. Only the `vmWithDisko` path carries the fix. (Documented in `vm-testing.m
 
 ## 8. Extras currently OFF
 
-`nixos/features/_extras.nix` means nvidia/printer/vicinae/cachix are skipped in evals.
-When debugging nvidia/boot modules, remember which mode you're in — grep
+`nixos/features/_extras.nix` means nvidia/vicinae/cachix are skipped in evals.
+Printer is imported directly by `uriel`, outside extras. When debugging nvidia/boot modules, remember which mode you're in — grep
 `boot.initrd.kernelModules` output changes drastically between modes.

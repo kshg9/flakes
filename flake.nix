@@ -23,6 +23,22 @@
     };
 
     vicinae.url = "github:vicinaehq/vicinae";
+
+    # Noctalia v5 desktop shell. Pin the `cachix` branch (latest cached commit)
+    # so prebuilt binaries from noctalia.cachix.org are used. Deliberately does
+    # NOT follow nixpkgs — a follows would change the derivation hash and miss
+    # the cache.
+    noctalia = {
+      url = "github:noctalia-dev/noctalia/cachix";
+    };
+
+    # SDDM + Quickshell lockscreen themes (Honkai: Star Rail, nier-automata, ...).
+    # Module: qylock.nixosModules.default → `programs.qylock` (enable, theme,
+    # sddm/quickshell toggles). Theme name = a dir under themes/ (see the module
+    # for the full list). Repo is ~1.2GB but only fetched at build/install time
+    # (the installer ISO already needs network for nixos-install), so it's a
+    # plain input rather than vendored.
+    qylock.url = "github:Darkkal44/qylock";
   };
 
   # Import all .nix files from current directory except flake.nix recursively

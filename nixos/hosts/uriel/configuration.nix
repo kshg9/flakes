@@ -26,12 +26,19 @@
           self.nixosModules.nix
           self.nixosModules.impermanence
           self.nixosModules.keyd
+          self.nixosModules.printer
 
           inputs.disko.nixosModules.disko
           self.diskoConfigurations.uriel
         ]
         # toggle heavy/optional modules: rename extras.nix -> _extras.nix to skip
-        ++ lib.optional (self ? nixosModules.extras) self.nixosModules.extras;
+        ++ lib.optional (self ? nixosModules.extras) self.nixosModules.extras
+        # qylock star-rail SDDM/login theme + quickshell lockscreen (rename
+        # qylock.nix -> _qylock.nix to fall back to the plain breeze greeter)
+        ++ lib.optional (self ? nixosModules.qylock) self.nixosModules.qylock;
+
+      # Per-desktop qylock theme (default in the feature module is star-rail).
+      programs.qylock.theme = "star-rail";
 
       boot.loader.systemd-boot.enable = true;
       boot.loader.efi.canTouchEfiVariables = true;

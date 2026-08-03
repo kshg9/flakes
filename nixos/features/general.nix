@@ -24,7 +24,7 @@
         ];
         shell = selfpkgs.environment;
         packages = with pkgs; [
-          kdePackages.kate
+          featherpad
           opencode
           vscode-fhs
         ];

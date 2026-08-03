@@ -105,8 +105,8 @@ in
           username=''${2:-kdj}
           sudo disko --mode destroy,format,mount --flake /iso/nixos#"$target"
           sudo nixos-install --no-root-passwd --flake /iso/nixos#"$target"
-          mkdir -p /mnt/persist/system/etc/nixos
-          cp -r /iso/nixos /mnt/persist/system/etc/nixos/flakes
+          sudo mkdir -p /mnt/persist/system/etc/nixos
+          sudo cp -r /iso/nixos /mnt/persist/system/etc/nixos/flakes
           sudo changepass --root /mnt "$username"
         ''}";
       };

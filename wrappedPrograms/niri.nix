@@ -1,8 +1,4 @@
 {
-  self,
-  lib,
-  ...
-}: {
   flake.wrappers.niri = {
     wlib,
     pkgs,
@@ -11,14 +7,14 @@
   }: {
     imports = [ wlib.wrapperModules.niri ];
 
-    config.env.NIRI_CONFIG = lib.mkForce "";
-
     config.settings = {
       prefer-no-csd = _: { };
 
+      # capitaine-cursors (also set on the SDDM greeter in desktop.nix).
+      # xcursor-theme/size are applied to Xwayland apps too via XCURSOR_*.
       cursor = {
-        "xcursor-theme" = "Bibata-Modern-Ice";
-        "xcursor-size" = 24;
+        xcursor-theme = "capitaine-cursors";
+        xcursor-size = 24;
       };
 
       input = {
@@ -35,7 +31,7 @@
         mouse.accel-profile = "flat";
       };
 
-      spawn-at-startup = [ [ "vicinae" "server" ] ];
+      spawn-at-startup = [ [ "noctalia" ] [ "vicinae" "server" ] ];
 
       binds = {
         "Mod+Space".spawn-sh = "vicinae toggle";
@@ -48,6 +44,12 @@
           props.repeat = false;
           content.spawn = [ "vicinae" "vicinae://launch/clipboard/history" ];
         };
+
+        # Noctalia IPC (bound away from vicinae's Mod+Space/Mod+P).
+        "Mod+Shift+Space".spawn-sh = "noctalia msg panel-toggle launcher";
+        "Mod+S".spawn-sh = "noctalia msg panel-toggle control-center";
+        "Mod+Comma".spawn-sh = "noctalia msg settings-toggle";
+        "Alt+Tab".spawn-sh = "noctalia msg window-switcher";
 
         "Mod+H".focus-column-left = _: { };
         "Mod+L".focus-column-right = _: { };
@@ -94,6 +96,9 @@
 
         "Mod+Shift+E".quit = _: { };
 
+        # Lock screen (qylock quickshell lockscreen; no-op if qylock toggled off).
+        "Mod+Shift+Q".spawn = "qylock-lock";
+
         "XF86AudioRaiseVolume".spawn-sh = "wpctl set-volume -l 1.4 @DEFAULT_AUDIO_SINK@ 5%+";
         "XF86AudioLowerVolume".spawn-sh = "wpctl set-volume -l 1.4 @DEFAULT_AUDIO_SINK@ 5%-";
         "XF86AudioMute".spawn-sh = "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
@@ -112,7 +117,7 @@
         gaps = 8;
         focus-ring = {
           width = 3;
-          active-color = "${self.themeNoHash.base08}";
+          active-color = "#f5c2e7";
         };
         shadow = {
           on = _: { };
@@ -136,17 +141,22 @@
       # Uncomment once you're comfortable with the path.
       # "screenshot-path" = "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png";
 
+      # Noctalia v5 shell — rounded corners everywhere + its settings window floats.
       window-rules = [
+        {
+          geometry-corner-radius = 20;
+          clip-to-geometry = true;
+        }
+        {
+          matches = [ { app-id = "^dev\\.noctalia\\.Noctalia$"; } ];
+          open-floating = true;
+          default-column-width = { fixed = 1080; };
+          default-window-height = { fixed = 920; };
+        }
         {
           matches = [ { app-id = "firefox$"; title = "^Picture-in-Picture$"; } ];
           open-floating = true;
         }
-        # Uncomment for rounded corners on all windows.
-        # (Works cleanly with prefer-no-csd — niri knows exact geometry.)
-        # {
-        #   geometry-corner-radius = 12;
-        #   clip-to-geometry = true;
-        # }
         # Block password managers from screen capture.
         # {
         #   matches = [ { app-id = "^org\\.keepassxc\\.KeePassXC$"; } ];
@@ -157,6 +167,11 @@
         #   block-out-from = "screen-capture";
         # }
       ];
+
+      # Noctalia IPC needs notification actions + window activation to work.
+      debug = {
+        honor-xdg-activation-with-invalid-serial = _: { };
+      };
 
       workspaces = {
         "w0" = { };

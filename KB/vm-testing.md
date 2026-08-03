@@ -2,14 +2,14 @@
 
 The dedicated `sandbox` host is a **clean, disposable experiment box** — no disko, no LUKS,
 no impermanence. Its purpose is fast iteration on declarative desktop experiments
-(hyprland, niri, kde/plasma, home-manager/hjem variants, plasma-manager→hjem ports, etc.):
+(hyprland, niri, lxqt, home-manager/hjem variants, etc.):
 get a clean OS, turn the experimental module on, see if it evals + boots. Nothing it does
 can touch `uriel`'s disk stack.
 
 ## Setup (`nixos/hosts/sandbox/configuration.nix`)
 
-- Same module set as uriel minus the disk stack and extras:
-  `base/general/desktop/nix/keyd`. No `inputs.disko`, no `impermanence`.
+- Same module set as uriel minus the disk stack, printer, and extras:
+  `base/general/desktop/nix/keyd`. No `inputs.disko`, no `impermanence`, no printer.
 - `hardware-configuration.nix` = `modulesPath + "/profiles/qemu-guest.nix"` + virtio
   kernel modules. No real hardware.
 - Plain disk: `virtualisation.memorySize = 4096`, `virtualisation.diskSize = 40960`
@@ -22,7 +22,7 @@ can touch `uriel`'s disk stack.
 
 ```bash
 nixos-rebuild build-vm --flake .#sandbox   # builds config + VM wrapper
-./result/bin/run-vm-sandbox                # boots a QEMU window (KDE via desktop module)
+./result/bin/run-vm-sandbox                # boots a QEMU window (LXQt via desktop module)
 ```
 
 `qemu-vm.nix` is imported directly into the host, so `system.build.vm` is a normal
@@ -37,6 +37,32 @@ rebuilding. For scripted runs, uncomment in the host config:
 virtualisation.graphics = false;
 boot.kernelParams = [ "console=ttyS0,115200n8" ];
 ```
+
+## Gotcha: niri blackscreens in the VM (needs GL)
+
+niri hard-requires OpenGL (Smithay wants `EGL_EXT_device_drm`). The default QEMU
+display is **std VGA — a plain framebuffer with no GL**, so niri starts and the
+screen goes black after SDDM login (qylock SDDM theme + the quickshell lockscreen
+still work — they only need software rendering). The sandbox host fixes it by
+passing a **virgl (GL) virtio GPU** — nixpkgs' qemu is built with `virglrenderer`:
+
+```nix
+virtualisation.qemu.options = [
+  "-device virtio-vga-gl"
+  "-display gtk,gl=on"
+];
+```
+
+(For reference: upstream niri issue #2567 / smithay #1415 — "No supported plane
+buffer format found" / "Missing required EGL extensions: EGL_EXT_device_drm".
+Hyprland/sway work without GL because they're not GL-bound the same way.)
+
+## Gotcha: SDDM greeter shows the stock X cursor
+
+SDDM runs its own X cursor before the session; with no cursor theme installed it
+shows the default "X". `desktop.nix` installs `capitaine-cursors` and sets
+`services.displayManager.sddm.settings.Theme.CursorTheme`/`CursorSize`; niri gets
+its own `cursor { xcursor-theme "capitaine-cursors" }` block in the wrapper.
 
 ## Gotcha: VM login password
 

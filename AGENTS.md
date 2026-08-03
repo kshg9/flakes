@@ -14,8 +14,8 @@ cool ideas from them. Read this before doing anything.
   - files starting with `_` are EXCLUDED from the flake (the toggle convention)
 - `nixos/hosts/uriel/` — the single host: `configuration.nix`, `disko.nix`,
   `hardware-configuration.nix`
-- `nixos/features/` — feature modules (`desktop`, `nix`, `impermanence`, `keyd`, ...).
-  `_extras.nix` is the disabled extras bundle (nvidia/printer/vicinae/cachix).
+- `nixos/features/` — feature modules (`desktop`, `noctalia`, `nix`, `impermanence`,
+  `keyd`, ...). `_extras.nix` is the disabled extras bundle (nvidia/vicinae/cachix).
 - `nixos/base/`, `nixos/extra/` — base system + wrappers around external modules
 - `wrappedPrograms/` — `flake.wrappers.*` built with `nix-wrapper-modules`
 - `scripts/` — `rebuild.sh`, `disko.sh`, `install.sh`, `check.sh`
@@ -65,12 +65,18 @@ git mv nixos/features/_extras.nix nixos/features/extras.nix   # ON
 git add -A
 ```
 
-## Current state (verified 2026-08-02)
+## Current state (verified 2026-08-03)
 
-- nixpkgs `nixos-unstable` rev `567a49d`; disko `ff8702b4` (master); 26.11 era
-- host: real machine `uriel` (disko + impermanence + extras toggle OFF)
+- nixpkgs `nixos-unstable` rev `148bab9`; disko `ff8702b4` (master); 26.11 era
+- desktop: **niri + noctalia v5** (via `wrappedPrograms/niri.nix` + `features/noctalia.nix`,
+  SDDM session). See `KB/noctalia.md`.
+- lockscreen/login: **qylock star-rail** (upstream `github:Darkkal44/qylock`
+  flake input + `features/qylock.nix`, imported by both hosts; `Mod+Shift+Q` locks).
+  Per-desktop theme via `programs.qylock.theme` (uriel = star-rail, sandbox =
+  nier-automata). Toggle via `_qylock.nix` rename. See `KB/qylock.md`.
+- host: real machine `uriel` (disko + impermanence + printer + extras toggle OFF)
 - test machine: `sandbox` — clean build-vm experiment box (no disko/LUKS/impermanence),
-  for hyprland/niri/kde/hjem experiments (see `KB/vm-testing.md`)
+  for hyprland/niri/lxqt/hjem experiments (see `KB/vm-testing.md`)
 - installer: `installer` — minimal graphical installer ISO (no Calamares, no DE; boots into a
   fullscreen kitty+tmux session via the vendored `packages/maximizer/`) that embeds this
   flake's source (`urielOS` alias = disko + nixos-install; see `KB/installer-iso.md`)
