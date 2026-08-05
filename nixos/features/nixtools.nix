@@ -1,5 +1,6 @@
 { inputs, ... }: {
-  flake.nixosModules.nix = { pkgs, ... }: {
+  # Nix developer tooling / daemon settings (renamed from the old `nix.nix`).
+  flake.nixosModules.nixTools = { pkgs, ... }: {
     imports = [
       inputs.nix-index-database.nixosModules.nix-index
     ];
@@ -28,12 +29,5 @@
       clean.enable = true;
       flake = "/etc/nixos/flakes";
     };
-
-    environment.systemPackages = with pkgs; [
-      nixd
-      statix
-      nixfmt
-      nix-diff
-    ];
   };
 }

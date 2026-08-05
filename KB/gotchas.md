@@ -60,5 +60,58 @@ error. Only the `vmWithDisko` path carries the fix. (Documented in `vm-testing.m
 ## 8. Extras currently OFF
 
 `nixos/features/_extras.nix` means nvidia/vicinae/cachix are skipped in evals.
-Printer is imported directly by `uriel`, outside extras. When debugging nvidia/boot modules, remember which mode you're in — grep
-`boot.initrd.kernelModules` output changes drastically between modes.
+Printer is imported directly by `uriel`, outside extras. When debugging nvidia/boot modules, remember which mode you're in —
+grep `boot.initrd.kernelModules` output changes drastically between modes.
+
+## 9. kitty 0.48.2 on a stale nixpkgs pin isn't cached → source build + flaky checkPhase
+
+`nixpkgs` lock on an *older* `nixos-unstable` rev means kitty 0.48.2 is neither on
+cache.nixos.org nor `nixpkgs` sub-cache, so it compiles from scratch (5+ min). Worse, its
+checkPhase runs the flaky `test_fish_integration` PTY suite (nixpkgs#4759), which fails
+under the build sandbox.
+
+- **`doCheck = false` is a NOOP for kitty** — this package's `checkPhase` isn't gated by
+  `doCheck`, so the drv hash is unchanged and the flaky tests still run. Must override
+  `checkPhase = "true"` (that *does* change the drv; verified).
+- Put the override in the **overlay** (`nixos/base/overlay.nix`), NOT in
+  `nixpkgs.config.packageOverrides` — hjem constructs its own `pkgs` and won't see
+  `packageOverrides`; it *does* see `nixpkgs.overlays`. (pluie-style: `jujutsu.doCheck=false`
+  via overlay in `overlay.nix`, wired by `nixpkgs.overlays`.)
+- To get a *cached* kitty instead: `nix flake update nixpkgs` (latest unstable tip is
+  always hydrated). `--only-fully-cached` is **not** a real Nix flag.
+
+## 10. Dual-input `nixpkgs` + `nixpkgs-unstable` (SAVED, user likes it — not yet wired)
+
+Idea (adapted from vimjoyer-style / cache-tracked setups): keep *two* nixpkgs inputs so a
+`nixpkgs-unstable`-input pulls **cached-latest** binaries while the main `nixpkgs` stays
+pinned/stale for everything else.
+
+- `flake.nix` adds a second input that tracks the live channel (so its tip is always
+  hydrated on the cache):
+  ```nix
+  inputs.nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
+  ```
+- Overlay overrides the flaky/cache-missing package from the *unstable* set:
+  ```nix
+  # nixos/base/overlay.nix
+  flake.overlays.default =
+    final: prev:
+    (prev.lib.optionalAttrs (self.packages ? ${prev.stdenv.hostPlatform.system})
+      self.packages.${prev.stdenv.hostPlatform.system})
+    // {
+      kitty = inputs.nixpkgs-unstable.legacyPackages.${prev.stdenv.hostPlatform.system}.kitty;
+    };
+  ```
+  Handing the whole `kitty` over (not just a `checkPhase` patch) means its *closure* comes
+  from the cached-unstable tip → no compile at all, and no test-run. The main `nixpkgs` pin
+  keeps everything else deterministic.
+- Trade-off: kitty's closure is theirs non-`nixpkgs` in the rest of the system (a handful of
+  cached deps; still mostly shared). Re-evaluate when the main pin eventually catches up past
+  that rev and kitty lands in the normal cache.
+- This session: dual-input was built, tried (incl. an nixpkgs-stable #nixpkgs-variant), then
+  meant due to mid-flight reorg. **User explicitly likes the approach — do it.**
+
+## 11. `nix flake update --only-fully-cached` doesn't exist
+
+There is no such flag in Nix 2.34.8 → `unrecognised flag`. The *latest* unstable tip is the
+one guaranteed hydrated, so plain `nix flake update nixpkgs` is the de-facto "cached-latest".

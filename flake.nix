@@ -1,6 +1,13 @@
 {
   inputs = {
+    # Main nixpkgs: nixos-unstable (the default, its latest tip is always
+    # hydrated on the binary cache → cached-latest binaries).
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    # Stable nixpkgs, deliberately pinned to the STABLE branch (nixos-26.05),
+    # for base-system stability. Can supply package pins that must not drift.
+    # NOTE: using this as the base flips the whole OS closure to a different rev
+    # → one-time big re-hydration (see KB/gotchas.md §10).
+    nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-26.05";
 
     # flake, module imports are automatic via custom function.
     flake-parts.url = "github:hercules-ci/flake-parts";
@@ -32,13 +39,6 @@
       url = "github:noctalia-dev/noctalia/cachix";
     };
 
-    # SDDM + Quickshell lockscreen themes (Honkai: Star Rail, nier-automata, ...).
-    # Module: qylock.nixosModules.default → `programs.qylock` (enable, theme,
-    # sddm/quickshell toggles). Theme name = a dir under themes/ (see the module
-    # for the full list). Repo is ~1.2GB but only fetched at build/install time
-    # (the installer ISO already needs network for nixos-install), so it's a
-    # plain input rather than vendored.
-    qylock.url = "github:Darkkal44/qylock";
   };
 
   # Import all .nix files from current directory except flake.nix recursively

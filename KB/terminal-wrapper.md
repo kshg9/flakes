@@ -12,7 +12,6 @@ in {
   imports = [ self.wrapperModules.fish ];
   binName = "fish";
   runtimePkgs = [ pkgs.git pkgs.eza ... selfpkgs.yazi selfpkgs.qalc ];
-  plugins = [ { src = selfpkgs.yazi; } { src = pkgs.fishPlugins.hydro; } ];
   env.EDITOR = lib.getExe pkgs.helix;
 };
 

@@ -1,0 +1,279 @@
+"window-rule"  {
+  "clip-to-geometry" true
+  "draw-border-with-background" false
+  "geometry-corner-radius" 10
+}
+"window-rule"  {
+  "match" "app-id"="^dev\\.noctalia\\.Noctalia$"
+  "default-column-width"  {
+    "fixed" 1080
+  }
+  "default-window-height"  {
+    "fixed" 920
+  }
+  "open-floating" true
+}
+"layer-rule"  {
+  "match" "namespace"="^noctalia-backdrop"
+  "place-within-backdrop" true
+}
+"window-rule"  {
+  "match" "app-id"="firefox$" "title"="^Picture-in-Picture$"
+  "open-floating" true
+}
+"spawn-at-startup" "noctalia"
+"spawn-at-startup" "vicinae" "server"
+"workspace" "w0" {
+
+}
+"workspace" "w1" {
+
+}
+"binds"  {
+  "Alt+Print"  {
+    "screenshot-window" 
+  }
+  "Ctrl+Print"  {
+    "screenshot-screen" 
+  }
+  "Mod+1"  {
+    "focus-workspace" "w0"
+  }
+  "Mod+2"  {
+    "focus-workspace" "w1"
+  }
+  "Mod+3"  {
+    "focus-workspace" "w2"
+  }
+  "Mod+BracketLeft"  {
+    "consume-or-expel-window-left" 
+  }
+  "Mod+BracketRight"  {
+    "consume-or-expel-window-right" 
+  }
+  "Mod+C"  {
+    "center-column" 
+  }
+  "Mod+Comma"  {
+    "consume-window-into-column" 
+  }
+  "Mod+Ctrl+H"  {
+    "set-column-width" "-5%"
+  }
+  "Mod+Ctrl+I"  {
+    "move-column-to-workspace-up" 
+  }
+  "Mod+Ctrl+J"  {
+    "set-window-height" "-5%"
+  }
+  "Mod+Ctrl+K"  {
+    "set-window-height" "+5%"
+  }
+  "Mod+Ctrl+L"  {
+    "set-column-width" "+5%"
+  }
+  "Mod+Ctrl+Shift+WheelScrollDown"  {
+    "move-column-right" 
+  }
+  "Mod+Ctrl+Shift+WheelScrollUp"  {
+    "move-column-left" 
+  }
+  "Mod+Ctrl+U"  {
+    "move-column-to-workspace-down" 
+  }
+  "Mod+Ctrl+WheelScrollDown" "cooldown-ms"=150 {
+    "move-column-to-workspace-down" 
+  }
+  "Mod+Ctrl+WheelScrollLeft"  {
+    "move-column-left" 
+  }
+  "Mod+Ctrl+WheelScrollRight"  {
+    "move-column-right" 
+  }
+  "Mod+Ctrl+WheelScrollUp" "cooldown-ms"=150 {
+    "move-column-to-workspace-up" 
+  }
+  "Mod+Escape" "allow-inhibiting"=false {
+    "toggle-keyboard-shortcuts-inhibit" 
+  }
+  "Mod+F"  {
+    "maximize-column" 
+  }
+  "Mod+H"  {
+    "focus-column-left" 
+  }
+  "Mod+I"  {
+    "focus-workspace-up" 
+  }
+  "Mod+J"  {
+    "focus-window-down" 
+  }
+  "Mod+K"  {
+    "focus-window-up" 
+  }
+  "Mod+L"  {
+    "focus-column-right" 
+  }
+  "Mod+O" "repeat"=false {
+    "toggle-overview" 
+  }
+  "Mod+P" "repeat"=false {
+    "spawn" "vicinae" "vicinae://launch/clipboard/history"
+  }
+  "Mod+Period"  {
+    "expel-window-from-column" 
+  }
+  "Mod+Q"  {
+    "close-window" 
+  }
+  "Mod+S"  {
+    "spawn-sh" "noctalia msg panel-toggle control-center"
+  }
+  "Mod+Shift+1"  {
+    "move-column-to-workspace" "w0"
+  }
+  "Mod+Shift+2"  {
+    "move-column-to-workspace" "w1"
+  }
+  "Mod+Shift+3"  {
+    "move-column-to-workspace" "w2"
+  }
+  "Mod+Shift+4"  {
+    "move-column-to-workspace" "w3"
+  }
+  "Mod+Shift+E"  {
+    "quit" 
+  }
+  "Mod+Shift+F"  {
+    "fullscreen-window" 
+  }
+  "Mod+Shift+H"  {
+    "move-column-left" 
+  }
+  "Mod+Shift+J"  {
+    "move-window-down" 
+  }
+  "Mod+Shift+K"  {
+    "move-window-up" 
+  }
+  "Mod+Shift+L"  {
+    "move-column-right" 
+  }
+  "Mod+Shift+Slash"  {
+    "show-hotkey-overlay" 
+  }
+  "Mod+Shift+Space"  {
+    "spawn-sh" "noctalia msg panel-toggle launcher"
+  }
+  "Mod+Shift+V"  {
+    "switch-focus-between-floating-and-tiling" 
+  }
+  "Mod+Shift+WheelScrollDown"  {
+    "focus-column-right" 
+  }
+  "Mod+Shift+WheelScrollUp"  {
+    "focus-column-left" 
+  }
+  "Mod+Space"  {
+    "spawn-sh" "vicinae toggle"
+  }
+  "Mod+T"  {
+    "spawn" "kitty"
+  }
+  "Mod+U"  {
+    "focus-workspace-down" 
+  }
+  "Mod+V"  {
+    "toggle-window-floating" 
+  }
+  "Mod+WheelScrollDown" "cooldown-ms"=150 {
+    "focus-workspace-down" 
+  }
+  "Mod+WheelScrollLeft"  {
+    "focus-column-left" 
+  }
+  "Mod+WheelScrollRight"  {
+    "focus-column-right" 
+  }
+  "Mod+WheelScrollUp" "cooldown-ms"=150 {
+    "focus-workspace-up" 
+  }
+  "Print"  {
+    "screenshot" 
+  }
+  "XF86AudioLowerVolume"  {
+    "spawn-sh" "wpctl set-volume -l 1.4 @DEFAULT_AUDIO_SINK@ 5%-"
+  }
+  "XF86AudioMicMute"  {
+    "spawn-sh" "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"
+  }
+  "XF86AudioMute"  {
+    "spawn-sh" "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+  }
+  "XF86AudioNext"  {
+    "spawn-sh" "playerctl next"
+  }
+  "XF86AudioPause"  {
+    "spawn-sh" "playerctl play-pause"
+  }
+  "XF86AudioPlay"  {
+    "spawn-sh" "playerctl play-pause"
+  }
+  "XF86AudioPrev"  {
+    "spawn-sh" "playerctl previous"
+  }
+  "XF86AudioRaiseVolume"  {
+    "spawn-sh" "wpctl set-volume -l 1.4 @DEFAULT_AUDIO_SINK@ 5%+"
+  }
+  "XF86AudioStop"  {
+    "spawn-sh" "playerctl stop"
+  }
+  "XF86MonBrightnessDown" "allow-when-locked"=true {
+    "spawn" "brightnessctl" "set" "5%-"
+  }
+  "XF86MonBrightnessUp" "allow-when-locked"=true {
+    "spawn" "brightnessctl" "set" "+5%"
+  }
+}
+"cursor"  {
+  "xcursor-size" 28
+  "xcursor-theme" "Bibata-Modern-Ice"
+}
+"debug"  {
+  "honor-xdg-activation-with-invalid-serial" 
+}
+"hotkey-overlay"  {
+  "skip-at-startup" 
+}
+"input"  {
+  "keyboard"  {
+    "repeat-delay" 250
+    "repeat-rate" 40
+    "xkb"  {
+      "layout" "us"
+    }
+  }
+  "mouse"  {
+    "accel-profile" "flat"
+  }
+  "touchpad"  {
+    "dwt" 
+    "natural-scroll" 
+    "tap" 
+  }
+}
+"layout"  {
+  "focus-ring"  {
+    "active-color" "#cba6f7"
+    "width" 3
+  }
+  "gaps" 8
+  "shadow"  {
+    "color" "#0008"
+    "offset" "x"=0 "y"=4
+    "on" 
+    "softness" 30
+    "spread" 6
+  }
+}
+"prefer-no-csd" 

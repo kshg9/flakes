@@ -1,0 +1,4 @@
+# Minimal: transparent kanagawa is the whole point. The theme file
+# (kanagawa-transparent.toml) inherits the bundled kanagawa and unsets the
+# opaque bg scopes; everything else is helix defaults.
+theme = "kanagawa-transparent"

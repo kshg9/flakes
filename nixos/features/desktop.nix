@@ -1,43 +1,48 @@
 { self, ... }: {
-  flake.nixosModules.desktop = { pkgs, config, ... }: let
-    selfpkgs = self.packages."${pkgs.stdenv.hostPlatform.system}";
-  in {
+  flake.nixosModules.desktop = { pkgs, config, ... }: {
     imports = [
       self.nixosModules.pipewire
       self.nixosModules.noctalia
     ];
 
-    # SDDM is the login manager; qylock's module installs + activates its theme
-    # (programs.qylock.sddm.enable, see qylock.nix). niri is the only session —
-    # the wrapped niri provides the wayland-sessions/niri.desktop entry
-    # (NIRI_CONFIG baked into its units).
+    # SDDM is the login manager, stock theme — plain and simple. niri is the
+    # only session. niri + kitty are now stock nixpkgs (their wrappers are gone)
+    # with configs as hjem dotfiles in nixos/users/files/ (niri config.kdl in
+    # kdj.nix, kitty.conf shared in base.nix) — themed from flake.ctp.
     services.xserver.enable = true;
     services.displayManager.sddm.enable = true;
     services.displayManager.sessionPackages = [
-      selfpkgs.niri
+      pkgs.niri
     ];
-    systemd.packages = [ selfpkgs.niri ];
-
-    # capitaine-cursors for the greeter (SDDM runs its own X cursor before the
-    # session starts; without a theme it shows the stock X cursor). niri gets
-    # its own cursor block in the wrapper (wrappedPrograms/niri.nix).
-    services.displayManager.sddm.settings.Theme.CursorTheme = "capitaine-cursors";
-    services.displayManager.sddm.settings.Theme.CursorSize = 24;
+    systemd.packages = [ pkgs.niri ];
 
     services.xserver.xkb = {
       layout = "us";
       variant = "";
     };
 
-    programs.firefox.enable = true;
+    # One cursor definition, sourced once from nixpkgs. niri picks it up via its
+    # default "auto" cursor (reads XCURSOR_THEME/XCURSOR_SIZE), Xwayland apps via
+    # the XCURSOR_* env vars, and the SDDM greeter via the explicit [Theme] keys
+    # below (the greeter runs before login, so it can't read session env vars).
+    environment.variables = {
+      XCURSOR_THEME = "Bibata-Modern-Ice";
+      XCURSOR_SIZE = "32";
+    };
+    services.displayManager.sddm.settings.Theme = {
+      CursorTheme = "Bibata-Modern-Ice";
+      CursorSize = 32;
+    };
 
+    # firefox is installed per-user via hjem (nixos/users/base.nix) — no
+    # programs.firefox here (that would duplicate it system-wide).
+
+    # App packages (browser/office/terminal/controls) now live in the per-user
+    # hjem profile (nixos/users/base.nix). SystemPackages here only carries what
+    # the desktop *session* needs before/outside any user profile: the compositor
+    # (niri) and its autostarted helpers.
     environment.systemPackages = [
-      pkgs.firefox
-      pkgs.wl-clipboard
-      pkgs.brightnessctl
-      pkgs.capitaine-cursors
-      selfpkgs.niri
-      selfpkgs.terminal
+      pkgs.niri
     ];
 
     fonts.packages = with pkgs; [

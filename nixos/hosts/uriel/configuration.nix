@@ -1,6 +1,7 @@
 {
   inputs,
   self,
+  config,
   ...
 }:
 {
@@ -8,6 +9,12 @@
     modules = [
       self.nixosModules.hostUriel
     ];
+    # ctp = resolved catppuccin palette (flavor/accent hex) — flake-level value
+    # injected into the NixOS module system, so NixOS/hjem modules (kdj.nix,
+    # hjem-ext, …) can theme without reaching back into `config.flake`.
+    specialArgs = {
+      ctp = config.flake.ctpPalette;
+    };
   };
 
   flake.nixosModules.hostUriel =
@@ -23,22 +30,22 @@
           self.nixosModules.base
           self.nixosModules.general
           self.nixosModules.desktop
-          self.nixosModules.nix
+          self.nixosModules.nixTools
           self.nixosModules.impermanence
           self.nixosModules.keyd
           self.nixosModules.printer
+          self.nixosModules.cachix
+
+          # per-user hjem profiles (kdj = full, yjh = restricted guest)
+          self.nixosModules.userKdj
+          self.nixosModules.userYjh
+          self.nixosModules.guestWipe
 
           inputs.disko.nixosModules.disko
           self.diskoConfigurations.uriel
         ]
         # toggle heavy/optional modules: rename extras.nix -> _extras.nix to skip
-        ++ lib.optional (self ? nixosModules.extras) self.nixosModules.extras
-        # qylock star-rail SDDM/login theme + quickshell lockscreen (rename
-        # qylock.nix -> _qylock.nix to fall back to the plain breeze greeter)
-        ++ lib.optional (self ? nixosModules.qylock) self.nixosModules.qylock;
-
-      # Per-desktop qylock theme (default in the feature module is star-rail).
-      programs.qylock.theme = "star-rail";
+        ++ lib.optional (self ? nixosModules.extras) self.nixosModules.extras;
 
       boot.loader.systemd-boot.enable = true;
       boot.loader.efi.canTouchEfiVariables = true;
@@ -48,16 +55,12 @@
       networking.hostName = "uriel";
       networking.networkmanager.enable = true;
 
-      # Password lives in a file on the persisted subvol (/persist/passwords/kdj),
-      # read by update-users-groups on every boot — impermanence wipes /etc/shadow,
-      # so the account is recreated fresh and this hash is always applied. The
-      # urielOS installer seeds that file (first password); afterwards change it
-      # with the `changepass` command (updates the file + /etc/shadow now).
-      users.users.${config.preferences.user.name}.hashedPasswordFile =
-        "/persist/passwords/${config.preferences.user.name}";
+      # Per-user passwords live in the user modules (kdj.nix / yjh.nix) —
+      # they're the owner of each account. Same mechanism as before: a file in
+      # /persist/passwords/<user> re-applied on every boot via update-users-groups.
 
-      nixpkgs.config.allowUnfree = true;
+       nixpkgs.config.allowUnfree = true;
 
-      system.stateVersion = "26.05";
+       system.stateVersion = "26.05";
     };
 }

@@ -42,8 +42,7 @@ boot.kernelParams = [ "console=ttyS0,115200n8" ];
 
 niri hard-requires OpenGL (Smithay wants `EGL_EXT_device_drm`). The default QEMU
 display is **std VGA — a plain framebuffer with no GL**, so niri starts and the
-screen goes black after SDDM login (qylock SDDM theme + the quickshell lockscreen
-still work — they only need software rendering). The sandbox host fixes it by
+screen goes black after SDDM login. The sandbox host fixes it by
 passing a **virgl (GL) virtio GPU** — nixpkgs' qemu is built with `virglrenderer`:
 
 ```nix
@@ -60,9 +59,12 @@ Hyprland/sway work without GL because they're not GL-bound the same way.)
 ## Gotcha: SDDM greeter shows the stock X cursor
 
 SDDM runs its own X cursor before the session; with no cursor theme installed it
-shows the default "X". `desktop.nix` installs `capitaine-cursors` and sets
-`services.displayManager.sddm.settings.Theme.CursorTheme`/`CursorSize`; niri gets
-its own `cursor { xcursor-theme "capitaine-cursors" }` block in the wrapper.
+shows the default "X". The plain SDDM setup in `desktop.nix` doesn't theme it
+(package support for the cursor theme stays in systemPackages). niri gets its
+own `cursor { xcursor-theme "capitaine-cursors" }` block in the wrapper, and the
+package ships in `systemPackages` so it's installed for the session too.
+To theme the greeter, add `services.displayManager.sddm.settings.Theme.CursorTheme
+= "capitaine-cursors";` back to `desktop.nix`.
 
 ## Gotcha: VM login password
 

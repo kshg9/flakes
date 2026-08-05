@@ -1,30 +1,39 @@
-{ ... }: {
+{ self, ... }: {
   flake.wrappers.fish = {
     wlib,
     pkgs,
     lib,
     ...
-  }: {
+  }:
+  let
+    selfpkgs = self.packages."${pkgs.stdenv.hostPlatform.system}";
+  in {
     imports = [ wlib.wrapperModules.fish ];
 
     configFile.content = ''
-      function fish_right_prompt
-          set -l color_duration "#7aa89f"
-          set -l color_reset (set_color normal)
+      ${lib.getExe pkgs.zoxide} init fish | source
+      ${lib.getExe selfpkgs.starship} init fish | source
 
-          if test $CMD_DURATION -gt 0
-              if test $CMD_DURATION -lt 1000
-                  printf '%s%dms%s' (set_color $color_duration) $CMD_DURATION $color_reset
-              else
-                  set -l secs (math -s 2 "$CMD_DURATION / 1000")
-                  printf '%s%ss%s' (set_color $color_duration) $secs $color_reset
+      # Dim the autosuggestions (edge/suggestion) so they read as a ghost of
+      # what's already typed instead of matching the live foreground. Catppuccin
+      # mocha, dimmed from the default foreground #cdd6f4.
+      set -g fish_color_autosuggestion '#6c7086'
+      set -g fish_color_edge '#6c7086'
+      set -g fish_color_selection --background=#585b70
+
+      function y
+          set -l tmp (mktemp -t "yazi-cwd.XXXXXX")
+          command yazi $argv --cwd-file="$tmp"
+          set -l code $status
+          if test -s "$tmp"
+              set -l cwd (string trim < "$tmp")
+              if test -n "$cwd"; and [ "$cwd" != "$PWD" ]; and test -d "$cwd"
+                  builtin cd -- "$cwd"
               end
           end
+          command rm -f -- "$tmp"
+          return $code
       end
-
-      set fish_color_autosuggestion "#54546d"
-
-      ${lib.getExe pkgs.zoxide} init fish | source
     '';
   };
 }

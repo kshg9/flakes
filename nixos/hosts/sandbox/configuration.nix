@@ -1,6 +1,7 @@
 {
   inputs,
   self,
+  config,
   ...
 }:
 {
@@ -8,6 +9,11 @@
     modules = [
       self.nixosModules.hostSandbox
     ];
+    # ctp = resolved catppuccin palette — a flake-level value injected into the
+    # NixOS module system (NOT reachable via config.flake from NixOS modules).
+    specialArgs = {
+      ctp = config.flake.ctpPalette;
+    };
   };
 
   flake.nixosModules.hostSandbox =
@@ -19,21 +25,19 @@
       ...
     }:
     {
-      imports =
-        [
-          self.nixosModules.base
-          self.nixosModules.general
-          self.nixosModules.desktop
-          self.nixosModules.nix
-          self.nixosModules.keyd
-          # qemu-vm.nix declares virtualisation.memorySize/diskSize + system.build.vm
-          # at base level. This host is a VM, so applying it unconditionally is fine.
-          (modulesPath + "/virtualisation/qemu-vm.nix")
-        ]
-        # qylock star-rail SDDM/login theme + quickshell lockscreen (rename
-        # qylock.nix -> _qylock.nix to fall back to the plain breeze greeter).
-        # Different theme than uriel — per-desktop theming demo.
-        ++ lib.optional (self ? nixosModules.qylock) self.nixosModules.qylock;
+      imports = [
+        self.nixosModules.base
+        self.nixosModules.general
+        self.nixosModules.desktop
+        self.nixosModules.nixTools
+        self.nixosModules.keyd
+        self.nixosModules.cachix
+        # per-user hjem profile (ephemeral test user biyoo — see nixos/users/biyoo.nix)
+        self.nixosModules.userBiyoo
+        # qemu-vm.nix declares virtualisation.memorySize/diskSize + system.build.vm
+        # at base level. This host is a VM, so applying it unconditionally is fine.
+        (modulesPath + "/virtualisation/qemu-vm.nix")
+      ];
 
       boot.loader.systemd-boot.enable = true;
       boot.loader.efi.canTouchEfiVariables = true;
@@ -42,13 +46,6 @@
 
       networking.hostName = "sandbox";
       networking.networkmanager.enable = true;
-
-      # Disposable VM → known dev password. Password: `vm`.
-      users.users.${config.preferences.user.name}.initialHashedPassword =
-        "$6$XjYPyh/Kt30OoNKn$EeNci/RYnQQKgkGilJwPkh5oreAhiu16HpH2LAsAb54NrE85O5rOowZ5HQQyKUX7dTIsA5q3K7eOAtCfQtqc5/";
-
-      # Per-desktop qylock theme: sandbox tries a different one than uriel.
-      programs.qylock.theme = "nier-automata";
 
       nixpkgs.config.allowUnfree = true;
 

@@ -1,6 +1,7 @@
 {
   inputs,
   self,
+  config,
   ...
 }:
 let
@@ -11,6 +12,10 @@ in
     modules = [
       self.nixosModules.hostInstaller
     ];
+    # ctp = resolved catppuccin palette (flake-level) — available to NixOS modules.
+    specialArgs = {
+      ctp = config.flake.ctpPalette;
+    };
   };
 
   flake.nixosModules.hostInstaller =
@@ -20,10 +25,7 @@ in
       pkgs,
       modulesPath,
       ...
-    }:
-    let
-      selfpkgs = self.packages.${pkgs.stdenv.hostPlatform.system};
-    in
+}:
     {
       imports = [
         # official NixOS graphical installer CD, birdee-style: X server + gparted/
@@ -32,6 +34,9 @@ in
         # `urielOS` terminal alias.
         "${modulesPath}/installer/cd-dvd/installation-cd-graphical-base.nix"
       ];
+
+      # overlay brings this flake's packages into nixpkgs (`pkgs.changepass`).
+      nixpkgs.overlays = [ self.overlays.default ];
 
       # birdee-style fullscreen terminal session (kitty + tmux) instead of a DE.
       # lightdm autologin into a kitty that `maximizer` resizes to fill the screen
@@ -83,7 +88,7 @@ in
         pkgs.kitty
         pkgs.tmux
         pkgs.neovim
-        selfpkgs.changepass
+        pkgs.changepass
       ];
 
       # one-shot installer. Usage: urielOS [target] [user]

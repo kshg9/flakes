@@ -9,6 +9,9 @@
 
     persistence.enable = true;
     persistence.nukeRoot.enable = true;
-    persistence.user = config.preferences.user.name;
+    # Impermanence is a uriel (desktop host) concern; kdj is the primary user
+    # whose home/data are made persistent. Guests (yjh) are deliberately NOT
+    # listed here — their home is left to be wiped on reboot + the guest-wipe timer.
+    persistence.user = "kdj";
   };
 }

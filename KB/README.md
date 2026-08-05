@@ -22,7 +22,6 @@ Current environment (verified 2026-08-02):
 | [birdee-inspiration.md](birdee-inspiration.md) | Ideas worth stealing from `~/reference/birdeeSystems` (wrapper splat, disko wrapper pkgs, configsPerSystem) |
 | [installer-iso.md](installer-iso.md) | Calamares installer ISO (`installer` host), embedded flake source, the `urielOS` one-shot install alias |
 | [noctalia.md](noctalia.md) | The niri + noctalia desktop shell: wrapper NIRI_CONFIG flow, IPC binds, cache |
-| [qylock.md](qylock.md) | Upstream qylock flake input: star-rail SDDM theme + Quickshell lockscreen, per-desktop themes |
 
 ## Commands that matter
 
