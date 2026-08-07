@@ -39,6 +39,9 @@
       url = "github:noctalia-dev/noctalia/cachix";
     };
 
+    # UEFI Secure Boot via Lanzaboote (replaces systemd-boot signing).
+    lanzaboote.url = "github:nix-community/lanzaboote";
+
   };
 
   # Import all .nix files from current directory except flake.nix recursively

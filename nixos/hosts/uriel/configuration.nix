@@ -44,8 +44,9 @@
           inputs.disko.nixosModules.disko
           self.diskoConfigurations.uriel
         ]
-        # toggle heavy/optional modules: rename extras.nix -> _extras.nix to skip
-        ++ lib.optional (self ? nixosModules.extras) self.nixosModules.extras;
+        # toggle heavy/optional modules by renaming `X.nix` -> `_X.nix` to skip.
+        ++ lib.optional (self ? nixosModules.extras) self.nixosModules.extras
+        ++ lib.optional (self ? nixosModules.lanzaboote) self.nixosModules.lanzaboote;
 
       boot.loader.systemd-boot.enable = true;
       boot.loader.efi.canTouchEfiVariables = true;

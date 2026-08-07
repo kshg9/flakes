@@ -163,10 +163,7 @@ git add -A
 
 ### Boot
 - [ ]  **plymouth (LUKS decrypt)**: add flake input `mac-style-plymouth = { url = "github:SergioRibera/s4rchiso-plymouth-theme"; inputs.nixpkgs.follows = "nixpkgs"; }` (themes the `/dev/mapper/enc` unlock prompt); enable `boot.plymouth.enable` in `uriel` (runs before LUKS passphrase) and wire theme
-- [ ]  **lanzaboote (Secure Boot)**: flake input `lanzaboote` (`github:nix-community/lanzaboote`) + `nixosModules.lanzaboote` + `boot.lanzaboote.enable`. Replaces systemd-boot signing; verify UEFI + LUKS/plymouth interplay before enabling
-
-### `herdr` → `hjem`
-- [ ]  Move `herdr` config (tmux-alternative terminal multiplexer, in nixpkgs as `herdr`) from system into hjem as a normal dotfile
+- [x]  **lanzaboote (Secure Boot)**: flake input `lanzaboote` (`github:nix-community/lanzaboote`) + `inputs.lanzaboote.nixosModules.lanzaboote` + `boot.lanzaboote.enable`. Implemented as toggle-able feature `nixos/features/lanzaboote.nix` (`flake.nixosModules.lanzaboote`), imported by uriel via `lib.optional (self ? nixosModules.lanzaboote)` — rename `lanzaboote.nix`→`_lanzaboote.nix` to fall back to systemd-boot. Forces `boot.loader.systemd-boot.enable = false`; `pkiBundle = "/etc/secureboot"` (persisted via `persistence.directories` → `/persist/system`); `autoGenerateKeys`+`autoEnrollKeys` on (generates keys first boot, exports .auth to ESP, next reboot in Setup Mode enrolls them). Need: put firmware into Setup Mode once, then reboot; verify with `sbctl status`/`bootctl status`. **Verify UEFI + LUKS/plymouth interplay before enabling.**
 
 ### Helix
 - [x]  custom helix config: transparent background + **kanagawa** theme, via hjem `config.files`. Minimal: `files/helix/config.toml` = `theme = "kanagawa-transparent"` only; `files/helix/kanagawa-transparent.toml` = `inherits = "kanagawa"` + `"ui.xxx" = {}` to unset the opaque bg scopes (helix CANNOT inline a theme in config.toml — `duplicate key theme` TOML error, verified against the 25.07 binary). Sourced in kdj.nix.
