@@ -48,6 +48,7 @@
     fonts.packages = with pkgs; [
       nerd-fonts.commit-mono
       ubuntu-sans
+      atkinson-hyperlegible-next
     ];
 
     fonts.fontconfig.defaultFonts = {

@@ -44,12 +44,17 @@
           enable = true;
           settings = {
             shell = {
+              font_family = "Atkinson Hyperlegible Next";
               settings_show_advanced = true;
             };
             theme = {
               mode = "dark";
               source = "builtin";
               builtin = "Catppuccin";
+            };
+            # 1.1 UI scale (non-bar shell surfaces: panels, launcher, CC).
+            accessibility = {
+              ui_scale = 1.1;
             };
             # 1.1 bar content scale (icons + labels inside the bar itself).
             bar = {
