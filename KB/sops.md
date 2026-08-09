@@ -1,8 +1,10 @@
 # sops / sops-nix — declarative secrets
 
 Setup captured 2026-08-09. sops-nix decrypts at boot (activation) directly to
-`/run/secrets/<name>`. **TWO-KEY model** (README-informed, chosen because a
-2nd host — nixos-vm/virt-manager, a GCP-ish cloud box — is coming):
+`/run/secrets/<name>`. **TWO-KEY model** — proves out before a 2nd real host
+(virt-manager, GCP-ish) lands. A sandbox VM POC validated the machinery, then
+was reverted (sandbox needs no secrets) — the runbooks below are the lasting
+takeaway.
 
 - **Personal editing key** — kdj's key in `~/.config/sops/age/keys.txt`
   (sops' default location). The `sops` CLI edits with THIS key on any host.
@@ -21,36 +23,24 @@ moment host #2 appears) and DON'T nest all hosts' secrets in one file.
 
 - `flake.nix` → `sops-nix` input (nixpkgs follows ours).
 - `nixos/features/sops.nix` → `flake.nixosModules.sops` — the **generic**
-  plumbing, imported by uriel AND sandbox:
+  plumbing, currently imported by uriel only:
   - `sops.age.keyFile = /var/lib/sops-nix/key.txt` + `generateKey = true`.
   - `environment.systemPackages` += `sops` + `age` (the CLI + age-keygen).
   - **NO `sops.secrets.*` here** — which secrets a host decrypts is gated
     PER-HOST, declared in that host's `configuration.nix`.
 - `nixos/features/impermanence.nix` — `persistence.files` includes
-  `/var/lib/sops-nix/key.txt` (uriel persists the boot key; sandbox has no
-  impermanence).
+  `/var/lib/sops-nix/key.txt` (uriel persists the boot key).
 - Per-host secret declarations (uriel):
   `sops.defaultSopsFile = ./../../features/secrets/uriel.yaml` +
   `sops.secrets.github_ssh_private_key` (kdj:users 0600) +
   `github_ssh_pubkey` (root:keys 0444) — in `hosts/uriel/configuration.nix`.
-- Per-host secret declarations (sandbox, POC verified 2026-08-09):
-  `sops.defaultSopsFile = ./../../features/secrets/sandbox.yaml` +
-  `sops.secrets.github_ssh_private_key` (biyoo:users 0600) +
-  `github_ssh_pubkey` (root:keys 0444) — in `hosts/sandbox/configuration.nix`.
-  The VM gets the boot key via a virtiofs shared dir
-  (`virtualisation.sharedDirectories`: `~/Downloads` → `/mnt/host`, swap-and-reboot).
 - `nixos/features/secrets/uriel.yaml` — uriel's secrets, encrypted for
-  `[kdj, uriel]`. `nixos/features/secrets/sandbox.yaml` — sandbox's, encrypted
-  for `[kdj, sandbox]`.
+  `[kdj, uriel]`.
 - `.sops.yaml` (repo root) — sops gates edits by filename from repo root.
-  `keys:` holds real pubkeys `&kdj` (personal), `&uriel` (uriel boot),
-  `&sandbox` (sandbox boot), and per-file `creation_rules` (`uriel\.yaml` →
-  `[*kdj,*uriel]`, `sandbox\.yaml` → `[*kdj,*sandbox]`). A creation_rule can
-  only reference a key that's DEFINED above — defining `&sandbox` after the
-  rule (or leaving it commented) makes `sops` fail to load its config.
-- `nixos/users/base.nix` — hjem `environment.sessionVariables`
-  `SOPS_AGE_KEY_FILE = ~/.config/sops/age/keys.txt` so the `sops` CLI always
-  uses the PERSONAL key (never the host boot key), wherever you are.
+  `keys:` holds real pubkeys `&kdj` (personal) + `&uriel` (uriel boot), and the
+  per-file `creation_rules` (`uriel\.yaml` → `[*kdj,*uriel]`). A creation_rule
+  can only reference a key that's DEFINED above — a rule referencing an
+  undefined/comment-out `&name` breaks `sops` config loading for all files.
 - `nixos/users/base.nix` — hjem `environment.sessionVariables`
   `SOPS_AGE_KEY_FILE = ~/.config/sops/age/keys.txt` so the `sops` CLI always
   uses the PERSONAL key (never the host boot key), wherever you are.
@@ -63,16 +53,10 @@ moment host #2 appears) and DON'T nest all hosts' secrets in one file.
   `&kdj` in `.sops.yaml` is filled with this pubkey.
 - **uriel boot key:** `/var/lib/sops-nix/key.txt` generated + persisted.
   `&uriel` in `.sops.yaml` matches `sudo age-keygen -y /var/lib/sops-nix/key.txt`.
-- **sandbox boot key** (swap-and-reboot method, POC-tested): VM is a disposable
-  dev box, so kdj makes a key he controls (`age-keygen -o ~/hello.txt`), stores
-  the PRIVATE key in a secrets manager, and hands it to the box when needed:
-  1. build + boot the VM (`virtualisation.sharedDirectories` exposes
-     `~/Downloads` → `/mnt/host`),
-  2. inside the VM: `sudo cp /mnt/host/hello.txt /var/lib/sops-nix/key.txt`
-     (first boot's `generateKey` made a random key — overwrite it),
-  3. `sudo reboot` → `/run/secrets` decrypts with the known key.
-  Consumption needs NO `~/.config/sops/...` swap in the VM (that's only for
-  running the sops CLI there).
+- **Future host boot key:** same pattern — its own key, its own secrets file.
+  A VM that's disposable can get a key you control via a shared dir
+  (`virtualisation.sharedDirectories`) + swap-and-reboot, but there's no live
+  sops usage on the sandbox today.
 
 ## kdj daily — editing / adding secrets non-interactively (jaq style)
 
@@ -87,16 +71,16 @@ Verified on real files 2026-08-09. `sops set` is the non-interactive route.
 
 # add a single secret from a file (e.g. ssh key — strips nothing, raw JSON string)
 jaq -Rs . ~/.ssh/id_ed25519_gh > /tmp/gh_key.json
-sops set --value-file nixos/features/secrets/sandbox.yaml \
+sops set --value-file nixos/features/secrets/uriel.yaml \
   '["github_ssh_private_key"]' /tmp/gh_key.json
 
 jaq -Rs . ~/.ssh/id_ed25519_gh.pub > /tmp/gh_pub.json
-sops set --value-file nixos/features/secrets/sandbox.yaml \
+sops set --value-file nixos/features/secrets/uriel.yaml \
   '["github_ssh_pubkey"]' /tmp/gh_pub.json
 
 # verify + stage (fileset trap: the new/edited .yaml must be git add-ed)
-sops -d nixos/features/secrets/sandbox.yaml
-git add nixos/features/secrets/sandbox.yaml
+sops -d nixos/features/secrets/uriel.yaml
+git add nixos/features/secrets/uriel.yaml
 ```
 
 Each edit re-encrypts for every recipient in the file's metadata (kdj + that
@@ -115,9 +99,10 @@ host). The `|` block respresentation is fine; `sops set` merges, so the
    Give the user the `keys` group (e.g. `extraGroups = [ "keys" ]`) so they can
    traverse `/run/secrets` (the dir itself is root:keys 750).
 3. **Make a boot key** for the host (dedicated age key; SSH keys are
-   passphrase-protected here → never usable, see below). VM: reuse the
-   swap-and-reboot virtiofs path. Bare metal: give it `persistence.files`
-   (`features/impermanence.nix`) for the key.
+   passphrase-protected here → never usable, see below). Persist it per the
+   host's setup: bare metal via `persistence.files`
+   (`features/impermanence.nix`); a disposable VM can swap in a key you control
+   through a `virtualisation.sharedDirectories` mount + reboot.
 4. **`.sops.yaml`**: add `&<host> "<pubkey>"` (from
    `sudo age-keygen -y /var/lib/sops-nix/key.txt`) + a per-file
    `creation_rules` entry `[*kdj, *<host>]`. ⚠️ define the key ABOVE the rule.
