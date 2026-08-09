@@ -16,6 +16,7 @@ keys:
   - &kdj "age1qqjvgyqn82wkrx66twl9nlc7sq2nh2sdjnhmdd7k22avprhy0e3ql6mgns"
   - &uriel "age10ffnxp9fu6jfv5qhgl86q7yc3jdhnr8u4d83yxkkrrck4g5z5ezq5e2xlr"
   # - &sandbox "age1...PLACEHOLDER"   # read `sudo age-keygen -y /var/lib/sops-nix/key.txt` on first boot
+  - &sandbox "age1nlte8yj0m43c6675kdaf28mgkw69vd2l9ypkgsnj8uku23fjxvjsmtnsgl"
 creation_rules:
   # uriel's secrets — encrypted for [kdj (you), uriel (this machine's boot key)]
   - path_regex: nixos/features/secrets/uriel\.yaml$
@@ -24,12 +25,8 @@ creation_rules:
           - *kdj
           - *uriel
   # sandbox's secrets — encrypted for [kdj (you), sandbox (its boot key)].
-  # COMMENTED OUT: `&sandbox` isn't defined yet, so any rule referencing it
-  # breaks `sops` config loading for ALL files. When the sandbox boot key
-  # exists (see KB/sops.md "swap-and-reboot"), fill `&sandbox` above and
-  # uncomment this block.
-  # - path_regex: nixos/features/secrets/sandbox\.yaml$
-  #   key_groups:
-  #     - age:
-  #         - *kdj
-  #         - *sandbox
+  - path_regex: nixos/features/secrets/sandbox\.yaml$
+    key_groups:
+      - age:
+          - *kdj
+          - *sandbox

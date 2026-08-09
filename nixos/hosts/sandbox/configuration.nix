@@ -44,9 +44,20 @@
         (modulesPath + "/virtualisation/qemu-vm.nix")
       ];
 
-      # When sandbox has a boot key + sandbox.yaml, declare its secrets here:
-      #   sops.defaultSopsFile = ./../../features/secrets/sandbox.yaml;
-      #   sops.secrets.github_ssh_private_key = { owner = "biyoo"; group = "users"; mode = "0600"; };
+      # sandbox's secrets — sandbox.yaml is encrypted for [kdj, sandbox] (see
+      # .sops.yaml). Create it with `sops nixos/features/secrets/sandbox.yaml`
+      # then `git add` it (fileset trap). Until then, eval will fail here.
+      sops.defaultSopsFile = ./../../features/secrets/sandbox.yaml;
+      sops.secrets.github_ssh_private_key = {
+        owner = "biyoo";
+        group = "users";
+        mode = "0600";
+      };
+      sops.secrets.github_ssh_pubkey = {
+        owner = "root";
+        group = "keys";
+        mode = "0444";
+      };
 
       boot.loader.systemd-boot.enable = true;
       boot.loader.efi.canTouchEfiVariables = true;
@@ -81,5 +92,15 @@
       # Headless (serial on stdout) for scripted runs:
       # virtualisation.graphics = false;
       # boot.kernelParams = [ "console=ttyS0,115200n8" ];
+
+      # virtiofs shared dir: host folder mounted in the VM — the swap-and-reboot
+      # path for the sops boot key. Put your boot key at /home/kdj/Downloads/
+      # on the host; inside the VM it appears at /mnt/host/hello.txt (see KB/sops.md).
+      virtualisation.sharedDirectories = {
+        host-share = {
+          source = "/home/kdj/Downloads";
+          target = "/mnt/host";
+        };
+      };
     };
 }

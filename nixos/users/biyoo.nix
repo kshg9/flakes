@@ -21,8 +21,9 @@
       # a dev box and biyoo is its only user, so restore full access here.
       users.users.${user} = {
         initialHashedPassword =
-          "$6$XjYPyh/Kt30OoNKn$EeNci/RYnQQKgkGilJwPkh5oreAhiu16HpH2LAsAb54NrE85O5rOowZ5HQQyKUUIX7dTIsA5q3K7eOAtCfQtqc5/";
-        extraGroups = [ "wheel" ];
+          "$6$LDUu.Y9KJo7bM5by$0MQdp3lNXE4qSUtuordK2EnS8PdY2e3XBZ3AgnQG9k8.Q7ySnwgNxZGq5UqNxXXxieyFXJZapvv34cKNNeNGg/";
+        # wheel (sudo) + keys (can read /run/secrets, dir is root:keys 750)
+        extraGroups = [ "wheel" "keys" ];
       };
 
       # Apps under test on this user's hjem profile. Just add the wrapped/normal
