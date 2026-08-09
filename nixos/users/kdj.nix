@@ -15,7 +15,12 @@
       # read by update-users-groups on every boot — impermanence wipes /etc/shadow,
       # so the account is recreated fresh and this hash is always applied. Change
       # it with the `changepass` command (updates the file + /etc/shadow now).
-      users.users.${user}.hashedPasswordFile = "/persist/passwords/${user}";
+      # kdj is the full-access user (sudo + NetworkManager) — not the base's job
+      # anymore; opts in right here.
+      users.users.${user} = {
+        hashedPasswordFile = "/persist/passwords/${user}";
+        extraGroups = [ "wheel" "networkmanager" "keys" ];
+      };
 
       # ===== hjem: kdj's home profile =========================================
       # niri is now plain nixpkgs niri (desktop.nix) — no wrapped NIRI_CONFIG
@@ -66,6 +71,14 @@
                 margin_edge = 0;
                 background_opacity = 0.55;
                 radius = 0;
+                concave_edge_corners = false;
+                widget_spacing = 6;
+                # Pill-shaped capsule defaults for all widgets
+                capsule = true;
+                capsule_fill = "surface_variant";
+                capsule_radius = 8;
+                capsule_opacity = 0.9;
+                capsule_padding = 6;
                 start = [ "launcher" "workspaces" ];
                 center = [ "clock" ];
                 end = [
@@ -101,15 +114,20 @@
         packages = with pkgs; [
           # kdj's personal / desktop apps
           firefox
+          # chromium and libreoffice are per-user hjem packages: comment a line
+          # out to stop installing it (don't wire these through extras — extras
+          # is for machine-level heavy/configurable modules only)
+          # chromium
 
           # dev tools specific to this founder
-          vscodium
+          vscodium-fhs
           opencode
           helix
           nixd
           statix
           nixfmt
           nix-diff
+          hydra-check
         ];
       };
     };

@@ -25,9 +25,10 @@
       users.users.${name} = {
         isNormalUser = true;
         description = "${name}'s account";
-        # Full-access default (wheel = sudo). A restricted guest overrides this
-        # in its own module (e.g. yjh.nix sets extraGroups = mkForce []).
-        extraGroups = [ "wheel" "networkmanager" ];
+        # No privileged groups by default — each user opts in via its own module
+        # (kdj: wheel+networkmanager; yjh: keys only). Simply assign
+        # `extraGroups` in the user's module to grant what it needs.
+        extraGroups = [ ];
         shell = pkgs.environment;
       };
 
@@ -59,6 +60,10 @@
           environment.sessionVariables = {
             EDITOR = "hx";
             NIXOS_OZONE_WL = "1";
+            # sops CLI edits with the PERSONAL key (keeps the editing key separate
+            # from each host's boot key). ~/.config/sops/age is the sops default,
+            # so this is just explicitness for the age-key discovery.
+            SOPS_AGE_KEY_FILE = "/home/${name}/.config/sops/age/keys.txt";
           };
 
           # ===== shared hjem dotfiles (kitty + yazi migrated from wrapper-modules) ===

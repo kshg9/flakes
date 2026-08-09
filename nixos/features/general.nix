@@ -33,6 +33,8 @@
       environment.systemPackages = with pkgs; [
         # system/admin tooling that must exist before/outside any user login
         changepass
+        # lightweight jq (JSON processing; handy for sops `--value-file` work)
+        jaq
       ];
     };
 }

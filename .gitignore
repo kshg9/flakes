@@ -23,6 +23,7 @@
 !*.toml
 !*.kdl
 !*.lua
+!*.yaml
 
 # Extension-less files
 !justfile

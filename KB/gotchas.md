@@ -59,8 +59,9 @@ error. Only the `vmWithDisko` path carries the fix. (Documented in `vm-testing.m
 
 ## 8. Extras currently OFF
 
-`nixos/features/_extras.nix` means nvidia/vicinae/cachix are skipped in evals.
-Printer is imported directly by `uriel`, outside extras. When debugging nvidia/boot modules, remember which mode you're in —
+`extras.enable = false` in `nixos/hosts/uriel/configuration.nix` means nvidia/vicinae/heavy
+apps are skipped in evals. Printer is imported directly by `uriel`, outside extras. When
+debugging nvidia/boot modules, remember which mode you're in —
 grep `boot.initrd.kernelModules` output changes drastically between modes.
 
 ## 9. kitty 0.48.2 on a stale nixpkgs pin isn't cached → source build + flaky checkPhase

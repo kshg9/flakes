@@ -29,6 +29,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Declarative secrets; age keys decrypted via the persisted ssh host key.
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     vicinae.url = "github:vicinaehq/vicinae";
 
     # Noctalia v5 desktop shell. Pin the `cachix` branch (latest cached commit)

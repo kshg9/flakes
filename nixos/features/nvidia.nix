@@ -1,3 +1,6 @@
+# NVIDIA GPU driver stack. Imported unconditionally by extras.nix; the
+# `extras.nvidia.enable` option (defined in extras.nix, master-ANDed there) is
+# the sole gate — this module only reads `config.extras.nvidia.enable`.
 { self, ... }: {
   flake.nixosModules.nvidia =
     {
@@ -6,7 +9,7 @@
       pkgs,
       ...
     }:
-    {
+    lib.mkIf config.extras.nvidia.enable {
       services.xserver.videoDrivers = [ "nvidia" ];
 
       boot.initrd.kernelModules = [

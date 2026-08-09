@@ -35,6 +35,8 @@
           self.nixosModules.keyd
           self.nixosModules.printer
           self.nixosModules.cachix
+          self.nixosModules.sops
+          self.nixosModules.extras
 
           # per-user hjem profiles (kdj = full, yjh = restricted guest)
           self.nixosModules.userKdj
@@ -45,8 +47,11 @@
           self.diskoConfigurations.uriel
         ]
         # toggle heavy/optional modules by renaming `X.nix` -> `_X.nix` to skip.
-        ++ lib.optional (self ? nixosModules.extras) self.nixosModules.extras
         ++ lib.optional (self ? nixosModules.lanzaboote) self.nixosModules.lanzaboote;
+
+      # extras is now option-driven (never renamed): heavy/optional components
+      # stay OFF unless flipped here. See features/extras.nix.
+      extras.enable = false;
 
       boot.loader.systemd-boot.enable = true;
       boot.loader.efi.canTouchEfiVariables = true;
@@ -61,6 +66,24 @@
       # /persist/passwords/<user> re-applied on every boot via update-users-groups.
 
        nixpkgs.config.allowUnfree = true;
+
+       # sops: which secrets this host decrypts. Gated per-host here (see
+       # nixos/features/sops.nix for the shared key plumbing). uriel.yaml is
+       # encrypted for [kdj, uriel] — see .sops.yaml.
+       sops.defaultSopsFile = ./../../features/secrets/uriel.yaml;
+       sops.secrets.github_ssh_private_key = {
+         # keyed to kdj so the user's git can read it (default root:root)
+         owner = "kdj";
+         group = "users";
+         mode = "0600";
+       };
+       sops.secrets.github_ssh_pubkey = {
+         # pubkey is public — readable by any user in the `keys` group
+         # (dir /run/secrets is root:keys).
+         owner = "root";
+         group = "keys";
+         mode = "0444";
+       };
 
        system.stateVersion = "26.05";
     };

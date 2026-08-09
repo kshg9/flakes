@@ -32,12 +32,21 @@
         self.nixosModules.nixTools
         self.nixosModules.keyd
         self.nixosModules.cachix
+        self.nixosModules.extras
+        # sops boot-key plumbing (no secrets declared yet — sandbox's boot key
+        # doesn't exist until nixos/features/secrets/sandbox.yaml is created;
+        # see KB/sops.md "two-host model").
+        self.nixosModules.sops
         # per-user hjem profile (ephemeral test user biyoo — see nixos/users/biyoo.nix)
         self.nixosModules.userBiyoo
         # qemu-vm.nix declares virtualisation.memorySize/diskSize + system.build.vm
         # at base level. This host is a VM, so applying it unconditionally is fine.
         (modulesPath + "/virtualisation/qemu-vm.nix")
       ];
+
+      # When sandbox has a boot key + sandbox.yaml, declare its secrets here:
+      #   sops.defaultSopsFile = ./../../features/secrets/sandbox.yaml;
+      #   sops.secrets.github_ssh_private_key = { owner = "biyoo"; group = "users"; mode = "0600"; };
 
       boot.loader.systemd-boot.enable = true;
       boot.loader.efi.canTouchEfiVariables = true;
@@ -48,6 +57,11 @@
       networking.networkmanager.enable = true;
 
       nixpkgs.config.allowUnfree = true;
+
+      # extras is OFF on sandbox by default — machine-level heavy/configurable
+      # modules only (nvidia, vicinae, …; see KB/module-toggle.md). Per-user apps
+      # are managed in each user's hjem profile instead.
+      extras.enable = false;
 
       system.stateVersion = "26.05";
 

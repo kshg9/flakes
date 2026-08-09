@@ -1,4 +1,4 @@
-# Module toggle convention (`_` prefix) and `importTree`
+# Module toggle conventions and `importTree`
 
 ## How module imports work here
 
@@ -15,49 +15,65 @@ Every `.nix` file in the repo (recursively) becomes a flake-parts module **excep
 2. any file whose name starts with `_`
 
 So an attrset like `{ flake.nixosModules.desktop = {...}: {...}; }` inside any `.nix`
-file registers `nixosModules.desktop` automatically. Rename the file to `_foo.nix` and
-the module **disappears from the flake entirely** — no eval, no build, no import.
+file registers `nixosModules.desktop` automatically. A file named `_foo.nix` is
+invisible to the flake entirely — no eval, no build, no import.
 
-## The extras toggle
+## Two ways to toggle a module
 
-`nixos/features/extras.nix` bundles heavy/optional hardware+service modules:
+### Preferred: a real option (`options.extras` style) — no renames
 
-```nix
-{ self, ... }: {
-  flake.nixosModules.extras = {
-    imports = [
-      self.nixosModules.nvidia
-      self.nixosModules.vicinae
-      self.nixosModules.cachix
-    ];
-  };
-}
-```
-
-It's imported conditionally in `nixos/hosts/uriel/configuration.nix`:
+Heavy/optional bundles are toggled **per-system** with a boolean option, never by
+renaming files. `nixos/features/extras.nix` registers `flake.nixosModules.extras`
+**always** and exposes a HARD master switch + inherited component toggles.
+Separate scenarios (pick ONE in a host):
 
 ```nix
-++ lib.optional (self ? nixosModules.extras) self.nixosModules.extras;
+# master OFF — nothing activates, period (even explicit component overrides lose)
+extras.enable = false;
+extras.nvidia.enable = true;   # ignored: master is OFF
+
+# master ON — every component defaults ON
+extras.enable = true;
+
+# master ON + fine-tune one component (vicinae stays ON)
+extras.enable = true;
+extras.nvidia.enable = false;
 ```
 
-**Toggle OFF:** `git mv nixos/features/extras.nix nixos/features/_extras.nix`
-Then `self.nixosModules.extras` is unset, `lib.optional` yields nothing, and the nvidia/
-vicinae/cachix modules are skipped. **Currently OFF** (file is `_extras.nix`).
-Printer support is not part of extras; `uriel` imports `self.nixosModules.printer`
-directly.
+Scope is **machine-level heavy/configurable modules only** (nvidia, vicinae; room for
+hysteria/dae). **Per-user apps are NOT extras** — each user's apps live in that
+user's hjem profile (`nixos/users/*.nix`) as a plain package list; comment a line
+in/out to add/remove one:
 
-**Toggle ON:** `git mv nixos/features/_extras.nix nixos/features/extras.nix`
+Why options, not renames:
+
+- renaming needs `git mv` every flip (fileset trap) and churns git history
+- a rename is **global** — you can't have nvidia on uriel but off on a VM
+- you'd be abusing "does this module exist" (`self ? ...`) as a boolean
+
+**Master-kill is centralized, not duplicated.** Each component option is built by
+`mkComponent` which does `apply = v: cfg.enable && v` — so the *resolved*
+`config.extras.<component>.enable` is already ANDed with the master. Submodules
+(NVIDIA, vicinae) simply gate on their own `config.extras.<component>.enable` and
+can never forget the master. This mirrors pluieflake's `mkCatppuccinOptions`
+(`inheritFrom` gradient) and catppuccin/nix's `catppuccin.autoEnable` inherit
+pattern. Imports are unconditional (imports can't reference `config`).
+
+Why `apply`, not `default` alone: a plain `default = cfg.enable` would let a
+host explicitly set `extras.nvidia.enable = true` while master is OFF — the
+component would come on. `apply` makes the master decisive in one place.
+
+### Legacy: the `_`-prefix rename
+
+Still valid for a leaf module you want fully gone from eval (e.g. `_kanata.nix`).
+Prefix `X.nix` → `_X.nix` to disable. Used sparingly; prefer an option when the
+toggle needs to be per-system.
 
 Verify a mode:
 ```bash
 nix eval .#nixosConfigurations.uriel.config.system.build.toplevel.drvPath
-# then check e.g. config.hardware.nvidia or boot.initrd.kernelModules via nix eval
+# then check e.g. config.services.xserver.videoDrivers or boot.initrd.kernelModules
 ```
-
-## Same trick for individual modules
-
-Same convention applies at the module level: e.g. `_kanata.nix`, `_niri.nix` are
-disabled by prefixing with `_`.
 
 ## Fileset / git interaction (critical)
 

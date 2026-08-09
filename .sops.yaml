@@ -1,0 +1,35 @@
+# creation_rules: which keys can decrypt/edit a given secret file. Each host
+# has its OWN file, encrypted for your PERSONAL key + THAT host's boot key.
+# `sops` CLI finds this file by name while run from the repo root.
+#
+# MODEL (two hosts and growing): one PERSONAL editing key (you, on any host,
+# lives at ~/.config/sops/age/keys.txt) + one BOOT key per host (at
+# /var/lib/sops-nix/key.txt; decrypts at boot only). A host's secrets file is
+# encrypted for [you, that host] so no other host can decrypt it.
+#
+# ADD A HOST:
+#   1. generate (or let the host auto-generate on first boot) its boot key.
+#   2. `sops updatekeys` on that host's secrets/*.yaml after adding its pubkey
+#      to the key_groups.age list below.
+# ->
+keys:
+  - &kdj "age1qqjvgyqn82wkrx66twl9nlc7sq2nh2sdjnhmdd7k22avprhy0e3ql6mgns"
+  - &uriel "age10ffnxp9fu6jfv5qhgl86q7yc3jdhnr8u4d83yxkkrrck4g5z5ezq5e2xlr"
+  # - &sandbox "age1...PLACEHOLDER"   # read `sudo age-keygen -y /var/lib/sops-nix/key.txt` on first boot
+creation_rules:
+  # uriel's secrets — encrypted for [kdj (you), uriel (this machine's boot key)]
+  - path_regex: nixos/features/secrets/uriel\.yaml$
+    key_groups:
+      - age:
+          - *kdj
+          - *uriel
+  # sandbox's secrets — encrypted for [kdj (you), sandbox (its boot key)].
+  # COMMENTED OUT: `&sandbox` isn't defined yet, so any rule referencing it
+  # breaks `sops` config loading for ALL files. When the sandbox boot key
+  # exists (see KB/sops.md "swap-and-reboot"), fill `&sandbox` above and
+  # uncomment this block.
+  # - path_regex: nixos/features/secrets/sandbox\.yaml$
+  #   key_groups:
+  #     - age:
+  #         - *kdj
+  #         - *sandbox

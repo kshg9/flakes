@@ -15,7 +15,11 @@ cool ideas from them. Read this before doing anything.
 - `nixos/hosts/uriel/` — the single host: `configuration.nix`, `disko.nix`,
   `hardware-configuration.nix`
 - `nixos/features/` — feature modules (`desktop`, `noctalia`, `nix`, `impermanence`,
-  `keyd`, ...). `_extras.nix` is the disabled extras bundle (nvidia/vicinae);
+  `keyd`, ...). `extras.nix` is the **option-driven** heavy/configurable bundle
+  (nvidia, vicinae; room for hysteria/dae) toggled per-system via
+  `extras.<component>.enable` (never renamed) with a HARD `extras.enable` master;
+  **per-user apps are NOT extras** — each user's hjem profile in `nixos/users/*.nix`
+  lists its own `packages` (comment a line out to drop one);
   `cachix.nix` binary caches are always-on (imported directly by both hosts).
 - `nixos/base/`, `nixos/extra/` — base system + wrappers around external modules
 - `nixos/users/` — **per-user hjem profiles**: `base.nix` (account + hjem wiring +
@@ -63,9 +67,10 @@ nixos-rebuild build-vm --flake '.#sandbox' && ./result/bin/run-vm-sandbox
 # installer ISO (Calamares, embeds flake source) — see KB/installer-iso.md
 scripts/build-iso.sh
 
-# toggle extras OFF/ON
-git mv nixos/features/extras.nix nixos/features/_extras.nix   # OFF
-git mv nixos/features/_extras.nix nixos/features/extras.nix   # ON
+# toggle extras OFF/ON: it's a per-system option now (never rename!).
+#   uriel: set `extras.enable = true` (or `extras.nvidia.enable = true`, …) in
+#   nixos/hosts/uriel/configuration.nix — see KB/module-toggle.md.
+# legacy rename-toggle only for leaf modules: git mv X.nix _X.nix   # OFF
 
 # stage new files so the flake sees them
 git add -A
@@ -132,7 +137,7 @@ git add -A
   (`programs.silentSDDM.enable`, flake input `silentSDDM`) — replaces plain breeze
   greeter. qylock removed (no custom lockscreen; `Mod+Shift+Q` lock keybind removed
   from `niri.nix`)
-- host: real machine `uriel` (disko + impermanence + printer + extras toggle OFF, cachix always-on)
+- host: real machine `uriel` (disko + impermanence + printer + extras option OFF, cachix always-on)
   - noctalia: stock defaults (no custom settings.toml)
 - test machine: `sandbox` — clean build-vm experiment box (no disko/LUKS/impermanence),
   for hyprland/niri/lxqt/hjem experiments (see `KB/vm-testing.md`)
@@ -154,12 +159,13 @@ git add -A
   wrapper, so tldeer gets its own `wrappedPrograms/tldeer.nix` (or plain package)
 - [ ] **obsidian / anki / vesktop** — add to packages (vesktop config via hjem when per-user)
 - [ ] **tuxedo** — `tuxedo-control-center` (+ tuxedo-rs kernel if needed); see `lunix/modules/cli/tools/tuxedo.nix`
-- [ ] **vscode → vscodium** — swap in user packages (currently `vscode-fhs` in `nixos/features/general.nix`)
+- [x] **vscode → vscodium** — done 2026-08-08: kdj packages use stock `vscodium-fhs` (open-vsx marketplace); the hand-made `packages/vscodium.nix` (MS marketplace) was deleted the same day
 - [ ] **firefox + chromium** — firefox already `programs.firefox`; add `chromium`
 - [ ] **git wrapper module** — `wrappedPrograms/git.nix` via `wlib.wrapperModules.git`
 - [ ] **jujutsu wrapper module** — `wrappedPrograms/jujutsu.nix` via `wlib.wrapperModules.jujutsu`
 - [ ] **lazygit** — NO wrapper module exists in wrapper-modules; configure via hjem `config.files` (config.toml)
-- [ ] **rclone / sops** — add to packages (later; sops for secrets)
+- [ ] **rclone** — add to packages (later)
+- [x] **sops** — done pivot 2026-08-09 (2nd host incoming: nixos-vm/virt-manager, GCP-ish): **TWO-KEY, per-host-file model** — personal editing key `~/.config/sops/age/keys.txt` (sops CLI key) + per-host boot key `/var/lib/sops-nix/key.txt` (`generateKey`). `nixos/features/sops.nix` is GENERIC (keyFile + CLI only); `sops.secrets.*` + `defaultSopsFile` are declared PER-HOST in each host's `configuration.nix` (uriel: `features/secrets/uriel.yaml` `[&kdj,&uriel]`; sandbox imported the module but declares nothing until its boot key + `secrets/sandbox.yaml` exist — see commented block in `hosts/sandbox/configuration.nix`). Boot-key persistence lives in `features/impermanence.nix`. `.sops.yaml` has per-file `creation_rules` + `&kdj`/`&uriel` **placeholders** (user fills real pubkeys). **kdj's ssh keys are passphrase-protected → never usable as boot keys (verified)** — see `KB/sops.md`.
 
 ### Boot
 - [ ]  **plymouth (LUKS decrypt)**: add flake input `mac-style-plymouth = { url = "github:SergioRibera/s4rchiso-plymouth-theme"; inputs.nixpkgs.follows = "nixpkgs"; }` (themes the `/dev/mapper/enc` unlock prompt); enable `boot.plymouth.enable` in `uriel` (runs before LUKS passphrase) and wire theme

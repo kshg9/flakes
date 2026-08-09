@@ -26,7 +26,11 @@
       # UX. (System bins are reachable by absolute path regardless, and the
       # weekly wipe keeps /home clean, so a stripped shell buys little.)
       users.users.${user} = {
-        extraGroups = lib.mkForce [ ];
+        # `keys` lets yjh `read` files under /run/secrets (the dir itself is
+        # root:keys 750). No wheel (no sudo; root has no password, so su is a
+        # dead end too). Private keys stay 0600 root/kdj so yjh still can't
+        # read those — only the pubkey is group readable.
+        extraGroups = [ "keys" ];
         hashedPasswordFile = "/persist/passwords/${user}";
       };
 
