@@ -4,12 +4,15 @@
   ...
 }: {
   flake.nixosModules.userKdj =
-{ pkgs, ... }:
+    { pkgs, ... }:
     let
       user = "kdj";
     in
     {
-      imports = [ (self.userBase user) ];
+      imports = [
+        (self.userBase user)
+        self.nixosModules.llm-agents
+      ];
 
       # Password lives in a file on the persisted subvol (/persist/passwords/kdj),
       # read by update-users-groups on every boot — impermanence wipes /etc/shadow,
@@ -51,6 +54,8 @@
             shell = {
               font_family = "Atkinson Hyperlegible Next";
               settings_show_advanced = true;
+              # Points to ~/.face which hjem symlinks to assets/kdj.jpg
+              avatar_path = "/home/kdj/.face";
             };
             theme = {
               mode = "dark";
@@ -114,20 +119,24 @@
         packages = with pkgs; [
           # kdj's personal / desktop apps
           firefox
-          # chromium and libreoffice are per-user hjem packages: comment a line
-          # out to stop installing it (don't wire these through extras — extras
-          # is for machine-level heavy/configurable modules only)
           # chromium
+          #obsidian
+          #anki-bin
+          #vesktop
+          rclone
+          # (use tldeer if in unstable or use tealdeer)
+          #tealdeer
 
           # dev tools specific to this founder
           vscodium-fhs
-          opencode
+          emacs
           helix
           nixd
           statix
           nixfmt
           nix-diff
           hydra-check
+          treefmt
         ];
       };
     };

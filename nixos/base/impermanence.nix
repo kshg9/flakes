@@ -1,5 +1,11 @@
+# Persistence implementation: reads the options from base/persistence.nix and
+# wires them into nix-community/impermanence (filesystem mounts, bind-mount
+# rules, the BTRFS root-rollback initrd service). Gated by `persistence.enable`.
+#
+# Moved here from the old `nixos/extra/impermanence.nix` so both the option
+# definitions (persistence.nix) and this implementation live under `base/`.
 { inputs, ... }: {
-  flake.nixosModules.extra_impermanence =
+  flake.nixosModules.impermanenceImpl =
     {
       lib,
       config,

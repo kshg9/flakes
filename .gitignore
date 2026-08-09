@@ -24,6 +24,7 @@
 !*.kdl
 !*.lua
 !*.yaml
+!*.jpg
 
 # Extension-less files
 !justfile

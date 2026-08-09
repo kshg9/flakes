@@ -17,10 +17,8 @@
         self.nixosModules.hjemExt
       ];
 
-      # Overlay merges this flake's `self.packages` (wrapped programs, plain
-      # packages) into nixpkgs so modules write `pkgs.niri`, `pkgs.kitty` … No
-      # `selfpkgs` boilerplate needed anymore.
-      nixpkgs.overlays = [ self.overlays.default ];
+      # NOTE: global nixpkgs settings (allowUnfree + overlay) live in
+      # self.nixosModules.nixpkgsConfig, imported by every host.
 
       # NOTE: the user account (users.users.*) and hjem profile live in
       # nixos/users/*.nix now — each user module pulls the shared base via
@@ -36,5 +34,29 @@
         # lightweight jq (JSON processing; handy for sops `--value-file` work)
         jaq
       ];
+
+      time.timeZone = "Asia/Kolkata";
+
+      i18n.defaultLocale = "en_IN";
+      i18n.extraLocaleSettings = {
+        LC_ADDRESS = "en_IN";
+        LC_IDENTIFICATION = "en_IN";
+        LC_MEASUREMENT = "en_IN";
+        LC_MONETARY = "en_IN";
+        LC_NAME = "en_IN";
+        LC_NUMERIC = "en_IN";
+        LC_PAPER = "en_IN";
+        LC_TELEPHONE = "en_IN";
+        LC_TIME = "en_IN";
+      };
+
+      services.upower.enable = true;
+      security.polkit.enable = true;
+
+      hardware = {
+        enableAllFirmware = true;
+        bluetooth.enable = true;
+        bluetooth.powerOnBoot = false;
+      };
     };
 }

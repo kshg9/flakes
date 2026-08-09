@@ -48,6 +48,15 @@
     # UEFI Secure Boot via Lanzaboote (replaces systemd-boot signing).
     lanzaboote.url = "github:nix-community/lanzaboote";
 
+    mac-style-plymouth = {
+      url = "github:SergioRibera/s4rchiso-plymouth-theme";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    llm-agents = {
+      url = "github:numtide/llm-agents.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   # Import all .nix files from current directory except flake.nix recursively

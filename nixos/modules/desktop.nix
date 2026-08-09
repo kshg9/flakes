@@ -1,16 +1,39 @@
 { self, ... }: {
-  flake.nixosModules.desktop = { pkgs, config, ... }: {
+  flake.nixosModules.desktop = { pkgs, config, lib, ... }: {
     imports = [
       self.nixosModules.pipewire
       self.nixosModules.noctalia
     ];
 
-    # SDDM is the login manager, stock theme — plain and simple. niri is the
-    # only session. niri + kitty are now stock nixpkgs (their wrappers are gone)
-    # with configs as hjem dotfiles in nixos/users/files/ (niri config.kdl in
-    # kdj.nix, kitty.conf shared in base.nix) — themed from flake.ctp.
     services.xserver.enable = true;
-    services.displayManager.sddm.enable = true;
+
+    # Minimal default SDDM configuration with Bibata cursor
+    services.displayManager.sddm = {
+      enable = true;
+      package = pkgs.kdePackages.sddm;
+      extraPackages = [ pkgs.bibata-cursors ];
+      # Force cursor theme via X resources so the greeter picks it up reliably
+      setupScript = let
+        xresources = pkgs.writeText "xresources" ''
+          Xcursor.theme: ${config.environment.variables.XCURSOR_THEME}
+          Xcursor.size: ${config.environment.variables.XCURSOR_SIZE}
+        '';
+      in ''
+        ${pkgs.xrdb}/bin/xrdb -merge ${xresources}
+      '';
+      settings = {
+        General = {
+          InputMethod = "";
+        };
+        Theme = {
+          CursorTheme = "Bibata-Modern-Ice";
+          CursorSize = 28;
+          FacesDir = "/etc/sddm/faces";
+        };
+      };
+    };
+
+
     services.displayManager.sessionPackages = [
       pkgs.niri
     ];
@@ -21,17 +44,10 @@
       variant = "";
     };
 
-    # One cursor definition, sourced once from nixpkgs. niri picks it up via its
-    # default "auto" cursor (reads XCURSOR_THEME/XCURSOR_SIZE), Xwayland apps via
-    # the XCURSOR_* env vars, and the SDDM greeter via the explicit [Theme] keys
-    # below (the greeter runs before login, so it can't read session env vars).
+    # Universal cursor for niri, GTK/Qt, and Xwayland apps
     environment.variables = {
       XCURSOR_THEME = "Bibata-Modern-Ice";
-      XCURSOR_SIZE = "32";
-    };
-    services.displayManager.sddm.settings.Theme = {
-      CursorTheme = "Bibata-Modern-Ice";
-      CursorSize = 32;
+      XCURSOR_SIZE = "28";
     };
 
     # firefox is installed per-user via hjem (nixos/users/base.nix) — no
@@ -40,9 +56,10 @@
     # App packages (browser/office/terminal/controls) now live in the per-user
     # hjem profile (nixos/users/base.nix). SystemPackages here only carries what
     # the desktop *session* needs before/outside any user profile: the compositor
-    # (niri) and its autostarted helpers.
+    # (niri) and system-wide assets like cursor themes.
     environment.systemPackages = [
       pkgs.niri
+      pkgs.bibata-cursors
     ];
 
     fonts.packages = with pkgs; [
@@ -57,29 +74,6 @@
       monospace = [ "CommitMono Nerd Font Mono" ];
     };
 
-    time.timeZone = "Asia/Kolkata";
-
-    i18n.defaultLocale = "en_IN";
-    i18n.extraLocaleSettings = {
-      LC_ADDRESS = "en_IN";
-      LC_IDENTIFICATION = "en_IN";
-      LC_MEASUREMENT = "en_IN";
-      LC_MONETARY = "en_IN";
-      LC_NAME = "en_IN";
-      LC_NUMERIC = "en_IN";
-      LC_PAPER = "en_IN";
-      LC_TELEPHONE = "en_IN";
-      LC_TIME = "en_IN";
-    };
-
-    services.upower.enable = true;
-    security.polkit.enable = true;
-
-    hardware = {
-      enableAllFirmware = true;
-      bluetooth.enable = true;
-      bluetooth.powerOnBoot = false;
-    };
 
     # Mirrors nixpkgs' programs.niri module. gtk = default fallback portal
     # (Access/Notification/FileChooser), gnome = screencasting, gnome-keyring =

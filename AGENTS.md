@@ -94,10 +94,11 @@ git add -A
     stay in `desktop.nix` systemPackages (session-critical).
 - **overlay + theme + hjem-ext** (added 2026-08-06):
   - `nixos/base/overlay.nix` → `flake.overlays.default` merges `self.packages`
-    into nixpkgs. Wired via `nixpkgs.overlays = [ self.overlays.default ]` in
-    `features/general.nix` (uriel+sandbox) and the installer host. Killed the
-    `selfpkgs` let-binding in all *host* modules (desktop.nix → `pkgs.niri/kitty`,
-    users/* → `pkgs.*`, installer → `pkgs.changepass`).
+    into nixpkgs. Wired globally with `nixpkgs.config.allowUnfree = true` via
+    `nixos/base/nixpkgs-config.nix` (`self.nixosModules.nixpkgsConfig`), imported
+    by every host. Killed the `selfpkgs` let-binding in all *host* modules
+    (desktop.nix → `pkgs.niri/kitty`, users/* → `pkgs.*`, installer →
+    `pkgs.changepass`).
     **Cycle guard:** the overlay must NOT be applied to the perSystem pkgs that
     build `self.packages` themselves — so `wrappedPrograms/*` internal
     cross-refs (`fish.nix → selfpkgs.starship`, `environment.nix →
@@ -133,9 +134,7 @@ git add -A
     the old toKeyValue/toKdl renderers (needs `!*.lua` too). Remaining wrappers:
     `environment`, `fish`, `qalc`, `starship` + plain packages `changepass`,
     `maximizer`, `vicinae`.
-- login: **SilentSDDM** (catppuccin-frappe) via `features/lockscreen.nix`
-  (`programs.silentSDDM.enable`, flake input `silentSDDM`) — replaces plain breeze
-  greeter. qylock removed (no custom lockscreen; `Mod+Shift+Q` lock keybind removed
+- login: **SDDM** (KDE default) configured via `modules/desktop.nix`. `qylock` removed (no custom lockscreen; `Mod+Shift+Q` lock keybind removed
   from `niri.nix`)
 - host: real machine `uriel` (disko + impermanence + printer + extras option OFF, cachix always-on)
   - noctalia: stock defaults (no custom settings.toml)
@@ -158,7 +157,7 @@ git add -A
   as `tldeer`; source via flake input/overlay. NOTE: wrapper-modules only ships a `tealdeer`
   wrapper, so tldeer gets its own `wrappedPrograms/tldeer.nix` (or plain package)
 - [ ] **obsidian / anki / vesktop** — add to packages (vesktop config via hjem when per-user)
-- [ ] **tuxedo** — `tuxedo-control-center` (+ tuxedo-rs kernel if needed); see `lunix/modules/cli/tools/tuxedo.nix`
+- [ ] **tuxedo** — an obsidian like todo list; see `lunix/modules/cli/tools/tuxedo.nix`
 - [x] **vscode → vscodium** — done 2026-08-08: kdj packages use stock `vscodium-fhs` (open-vsx marketplace); the hand-made `packages/vscodium.nix` (MS marketplace) was deleted the same day
 - [ ] **firefox + chromium** — firefox already `programs.firefox`; add `chromium`
 - [ ] **git wrapper module** — `wrappedPrograms/git.nix` via `wlib.wrapperModules.git`
@@ -192,6 +191,13 @@ git add -A
 - [ ]  restrict apps: dev tooling (`helix`, `vscodium`, `opencode`…) already moved into kdj's hjem profile; `general.nix` systemPackages now only `changepass`. REMAINING: yjh's hjem profile carries only allowed apps + no `nix` (can't self-install) — verify `nix` isn't in guest's closure
 - [ ]  weekly wipe: `systemd.timer` (`OnCalendar=weekly`, `Persistent=true`) → `loginctl terminate-user yjh`, `rsync --delete` pristine template back to `/home/yjh`, fix ownership; home is also already unpersisted under impermanence (wiped on reboot)
 - [ ]  sandbox `biyoo` is ephemeral/dev-only — the same wipe/timer machinery is NOT for it
+
+### Ruixi-rebirth inspirations (tracked in `KB/ruixi-inspiration.md`)
+- [ ] **emanote** — note-taking / static site generator (https://emanote.srid.ca/start)
+- [ ] **mpv + Anime4K** — mpv configured with Anime4K shaders
+- [ ] **ruixi-style launcher/search** — explore search launcher UI from ruixi-rebirth
+- [ ] **modular ssh & zoxide** — split ssh & zoxide configs into separate dotfile modules
+- [ ] **android setup** — adb, scrcpy, udev rules & android environment
 
 ## When I learn something new
 

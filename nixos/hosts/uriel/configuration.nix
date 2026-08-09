@@ -5,16 +5,8 @@
   ...
 }:
 {
-  flake.nixosConfigurations.uriel = inputs.nixpkgs.lib.nixosSystem {
-    modules = [
-      self.nixosModules.hostUriel
-    ];
-    # ctp = resolved catppuccin palette (flavor/accent hex) — flake-level value
-    # injected into the NixOS module system, so NixOS/hjem modules (kdj.nix,
-    # hjem-ext, …) can theme without reaching back into `config.flake`.
-    specialArgs = {
-      ctp = config.flake.ctpPalette;
-    };
+  flake.nixosConfigurations.uriel = config.flake.nebula.mkHost {
+    module = self.nixosModules.hostUriel;
   };
 
   flake.nixosModules.hostUriel =
@@ -28,6 +20,7 @@
       imports =
         [
           self.nixosModules.base
+          self.nixosModules.nixpkgsConfig
           self.nixosModules.general
           self.nixosModules.desktop
           self.nixosModules.nixTools
@@ -37,6 +30,7 @@
           self.nixosModules.cachix
           self.nixosModules.sops
           self.nixosModules.extras
+          self.nixosModules.tailscale
 
           # per-user hjem profiles (kdj = full, yjh = restricted guest)
           self.nixosModules.userKdj
@@ -65,12 +59,10 @@
       # they're the owner of each account. Same mechanism as before: a file in
       # /persist/passwords/<user> re-applied on every boot via update-users-groups.
 
-       nixpkgs.config.allowUnfree = true;
-
        # sops: which secrets this host decrypts. Gated per-host here (see
        # nixos/features/sops.nix for the shared key plumbing). uriel.yaml is
        # encrypted for [kdj, uriel] — see .sops.yaml.
-       sops.defaultSopsFile = ./../../features/secrets/uriel.yaml;
+       sops.defaultSopsFile = ./../../../secrets/uriel.yaml;
        sops.secrets.github_ssh_private_key = {
          # keyed to kdj so the user's git can read it (default root:root)
          owner = "kdj";

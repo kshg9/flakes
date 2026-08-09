@@ -5,15 +5,8 @@
   ...
 }:
 {
-  flake.nixosConfigurations.sandbox = inputs.nixpkgs.lib.nixosSystem {
-    modules = [
-      self.nixosModules.hostSandbox
-    ];
-    # ctp = resolved catppuccin palette — a flake-level value injected into the
-    # NixOS module system (NOT reachable via config.flake from NixOS modules).
-    specialArgs = {
-      ctp = config.flake.ctpPalette;
-    };
+  flake.nixosConfigurations.sandbox = config.flake.nebula.mkHost {
+    module = self.nixosModules.hostSandbox;
   };
 
   flake.nixosModules.hostSandbox =
@@ -27,8 +20,9 @@
     {
       imports = [
         self.nixosModules.base
+        self.nixosModules.nixpkgsConfig
         self.nixosModules.general
-        self.nixosModules.desktop
+
         self.nixosModules.nixTools
         self.nixosModules.keyd
         self.nixosModules.cachix
@@ -40,6 +34,16 @@
         (modulesPath + "/virtualisation/qemu-vm.nix")
       ];
 
+      # -- Sandbox Minimal GUI --
+      # Inlined here instead of importing `self.nixosModules.desktop` (which is tuned
+      # for the primary host) so you can easily rip it out or hack on it for tests.
+      services.xserver.enable = true;
+      services.displayManager.sddm.enable = true;
+      services.displayManager.sddm.wayland.enable = true;
+      programs.labwc.enable = true;
+      fonts.packages = with pkgs; [ ubuntu-sans nerd-fonts.commit-mono ];
+      # -------------------------
+
       boot.loader.systemd-boot.enable = true;
       boot.loader.efi.canTouchEfiVariables = true;
 
@@ -47,8 +51,6 @@
 
       networking.hostName = "sandbox";
       networking.networkmanager.enable = true;
-
-      nixpkgs.config.allowUnfree = true;
 
       # extras is OFF on sandbox by default — machine-level heavy/configurable
       # modules only (nvidia, vicinae, …; see KB/module-toggle.md). Per-user apps
@@ -66,9 +68,13 @@
       # niri hard-requires OpenGL (EGL_EXT_device_drm). The default std VGA is
       # a plain framebuffer — no GL — so niri would blackscreen after login.
       # Pass a virgl (GL) virtio GPU instead; our qemu is built with virglrenderer.
+      # grab-on-hover: the host runs niri (Wayland), whose window input-grab is
+      # flaky — without it keypresses (e.g. Meta+T) are eaten by the host and
+      # never reach the guest. This captures keyboard+pointer once the mouse is
+      # over the VM window.
       virtualisation.qemu.options = [
         "-device virtio-vga-gl"
-        "-display gtk,gl=on"
+        "-display gtk,gl=on,grab-on-hover=on"
       ];
       # Headless (serial on stdout) for scripted runs:
       # virtualisation.graphics = false;

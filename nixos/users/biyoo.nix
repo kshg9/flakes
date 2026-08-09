@@ -16,7 +16,7 @@
     {
       imports = [ (self.userBase user) ];
 
-# Disposable VM → known dev password. Password: `vm`.
+      # Disposable VM → known dev password. Password: `vm`.
       users.users.${user} = {
         initialHashedPassword =
           "$6$LDUu.Y9KJo7bM5by$0MQdp3lNXE4qSUtuordK2EnS8PdY2e3XBZ3AgnQG9k8.Q7ySnwgNxZGq5UqNxXXxieyFXJZapvv34cKNNeNGg/";

@@ -8,14 +8,8 @@ let
   maximizer = self.packages.x86_64-linux.maximizer;
 in
 {
-  flake.nixosConfigurations.installer = inputs.nixpkgs.lib.nixosSystem {
-    modules = [
-      self.nixosModules.hostInstaller
-    ];
-    # ctp = resolved catppuccin palette (flake-level) — available to NixOS modules.
-    specialArgs = {
-      ctp = config.flake.ctpPalette;
-    };
+  flake.nixosConfigurations.installer = config.flake.nebula.mkHost {
+    module = self.nixosModules.hostInstaller;
   };
 
   flake.nixosModules.hostInstaller =
@@ -28,15 +22,14 @@ in
 }:
     {
       imports = [
+        self.nixosModules.nixpkgsConfig
+
         # official NixOS graphical installer CD, birdee-style: X server + gparted/
         # firefox/vim/nano, no desktop environment. The live session below boots
         # straight into a maximized kitty running tmux — the install is the
         # `urielOS` terminal alias.
         "${modulesPath}/installer/cd-dvd/installation-cd-graphical-base.nix"
       ];
-
-      # overlay brings this flake's packages into nixpkgs (`pkgs.changepass`).
-      nixpkgs.overlays = [ self.overlays.default ];
 
       # birdee-style fullscreen terminal session (kitty + tmux) instead of a DE.
       # lightdm autologin into a kitty that `maximizer` resizes to fill the screen
@@ -69,7 +62,6 @@ in
       # → ./result/iso/flakes-installer.iso
       image.baseName = lib.mkForce "flakes-installer";
 
-      nixpkgs.config.allowUnfree = true;
       nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
 
       nix.settings = {

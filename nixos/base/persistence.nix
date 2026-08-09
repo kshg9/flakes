@@ -22,6 +22,7 @@
       };
 
       directories = lib.mkOption {
+        type = lib.types.listOf (lib.types.either lib.types.str lib.types.attrs);
         default = [ ];
         description = ''
           directories to persist
@@ -29,6 +30,7 @@
       };
 
       files = lib.mkOption {
+        type = lib.types.listOf (lib.types.either lib.types.str lib.types.attrs);
         default = [ ];
         description = ''
           files to persist
@@ -36,6 +38,7 @@
       };
 
       data.directories = lib.mkOption {
+        type = lib.types.listOf (lib.types.either lib.types.str lib.types.attrs);
         default = [ ];
         description = ''
           directories to persist
@@ -43,6 +46,7 @@
       };
 
       data.files = lib.mkOption {
+        type = lib.types.listOf (lib.types.either lib.types.str lib.types.attrs);
         default = [ ];
         description = ''
           files to persist
@@ -50,6 +54,7 @@
       };
 
       cache.directories = lib.mkOption {
+        type = lib.types.listOf (lib.types.either lib.types.str lib.types.attrs);
         default = [ ];
         description = ''
           directories to persist
@@ -57,6 +62,7 @@
       };
 
       cache.files = lib.mkOption {
+        type = lib.types.listOf (lib.types.either lib.types.str lib.types.attrs);
         default = [ ];
         description = ''
           files to persist

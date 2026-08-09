@@ -17,7 +17,7 @@ keys:
   - &uriel "age10ffnxp9fu6jfv5qhgl86q7yc3jdhnr8u4d83yxkkrrck4g5z5ezq5e2xlr"
 creation_rules:
   # uriel's secrets — encrypted for [kdj (you), uriel (this machine's boot key)]
-  - path_regex: nixos/features/secrets/uriel\.yaml$
+  - path_regex: secrets/uriel\.yaml$
     key_groups:
       - age:
           - *kdj

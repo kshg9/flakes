@@ -1,6 +1,6 @@
 # yjh — restricted guest account. NO sudo/wheel, minimal packages, no dev
 # tooling, and no `nix`. Home is wiped on reboot under impermanence AND wiped
-# weekly while running by `features/guest-wipe.nix`.
+# weekly while running by `modules/guest-wipe.nix`.
 {
   self,
   ...
@@ -40,5 +40,7 @@
       hjem.users.${user}.packages = with pkgs; [
         firefox
       ];
+
+      guestWipe.users = [ user ];
     };
 }
