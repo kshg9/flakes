@@ -15,13 +15,12 @@
       self.nixosModules.pipewire
       self.nixosModules.noctalia
       self.nixosModules.desktop-niri
-      self.nixosModules.desktop-labwc
     ];
 
     # ── option interface ───────────────────────────────────────────────
     options.desktop = {
       configNiri.enable  = lib.mkEnableOption "the Niri config (niri + noctalia bar + dotfiles)";
-      configLabwc.enable = lib.mkEnableOption "the Labwc config (labwc + sfwbar + Tail-R theme)";
+      # configRiver.enable = lib.mkEnableOption "the RiverWM config (using TVL reka module; built from source when enabled)";
     };
 
     # ── shared desktop config (always-on when desktop module is imported) ──
