@@ -26,8 +26,16 @@
 !*.yaml
 !*.jpg
 
-# Extension-less files
+# Extension-less files or specific files
 !justfile
+!autostart
+!dunstrc
+!themerc
+!*.config
+!*.xml
+!*.css
+!*.png
+!*.svg
 
 # VCS config
 !.gitignore

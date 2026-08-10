@@ -47,6 +47,11 @@
       # stay OFF unless flipped here. See features/extras.nix.
       extras.enable = false;
 
+      # desktop configurations: flip ON whichever compositors you want available in SDDM.
+      # Both can be ON simultaneously — the session picker shows all enabled.
+      desktop.configNiri.enable  = true;
+      desktop.configLabwc.enable = true;
+
       boot.loader.systemd-boot.enable = true;
       boot.loader.efi.canTouchEfiVariables = true;
 

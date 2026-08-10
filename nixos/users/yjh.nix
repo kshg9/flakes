@@ -35,8 +35,7 @@
       };
 
       # Guest is limited to the common base (playerctl/brightnessctl/bibata)
-      # plus a browser. No `nix`, no editors, no dev tooling — those are
-      # kdj-profile-only (see kdj.nix).
+      # plus a browser.
       hjem.users.${user}.packages = with pkgs; [
         firefox
       ];
