@@ -24,6 +24,7 @@
     starship
     mcfly
     wlsunset
+    nautilus
   ];
   
   xdg.config.files = {

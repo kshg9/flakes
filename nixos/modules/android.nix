@@ -1,6 +1,6 @@
 { inputs, ... }: {
   flake.nixosModules.android = { pkgs, config, lib, ... }: let
-    android-sdk = inputs.android-nixpkgs.sdk.${pkgs.system} (sdkPkgs: with sdkPkgs; [
+    android-sdk = inputs.android-nixpkgs.sdk.${pkgs.stdenv.hostPlatform.system} (sdkPkgs: with sdkPkgs; [
       cmdline-tools-latest
       build-tools-34-0-0
       platform-tools
