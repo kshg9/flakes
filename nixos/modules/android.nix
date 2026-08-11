@@ -24,7 +24,7 @@
       hjem.users.kdj = {
         packages = [
           customSdk.androidsdk
-          (pkgs.androidStudioPackages.canary.override { tiling_wm = true; })
+          ((pkgs.androidStudioPackages.canary.override { tiling_wm = true; }).withSdk customSdk.androidsdk)
           pkgs.jdk17
         ];
         environment.sessionVariables = {
