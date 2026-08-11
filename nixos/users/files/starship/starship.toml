@@ -1,77 +1,100 @@
 "$schema" = 'https://starship.rs/config-schema.json'
 
-format = """
-[░▒▓](#a3aed2)\
-$os\
-[](bg:#769ff0 fg:#a3aed2)\
+add_newline = true
+continuation_prompt = "[▸▹ ](dimmed white)"
+
+format = """($nix_shell$container$fill$git_metrics\n)$cmd_duration\
+$jobs\
+$character"""
+
+right_format = """
 $directory\
-[](fg:#769ff0 bg:#394260)\
 $git_branch\
+$git_commit\
+$git_state\
 $git_status\
-[](fg:#394260 bg:#212736)\
 $python\
-[](fg:#212736 bg:#1d2230)\
-$time\
-[ ](fg:#1d2230)\
-\n$character"""
+$os\
+$time"""
+
+[fill]
+symbol = ' '
+
+[character]
+format = "$symbol "
+success_symbol = "[◎](bold italic bright-yellow)"
+error_symbol = "[○](italic purple)"
+vimcmd_symbol = "[■](italic dimmed green)"
+vimcmd_replace_one_symbol = "◌"
+vimcmd_replace_symbol = "□"
+vimcmd_visual_symbol = "▼"
 
 [directory]
-style = "bg:#769ff0"
-format = "[ $path ]($style)"
-truncation_length = 3
-truncation_symbol = "…/"
+home_symbol = "⌂"
+truncation_length = 2
+truncation_symbol = "□ "
+read_only = " ◈"
+use_os_path_sep = true
+style = "italic blue"
+format = '[$path]($style)[$read_only]($read_only_style)'
+repo_root_style = 'bold blue'
+repo_root_format = '[$before_root_path]($before_repo_root_style)[$repo_root]($repo_root_style)[$path]($style)[$read_only]($read_only_style) [△](bold bright-blue)'
 
-[directory.substitutions]
-"Documents" = "󰈙 "
-"Downloads" = " "
-"Music" = " "
-"Pictures" = " "
+[cmd_duration]
+format = "[◄ $duration ](italic white)"
 
-[git_branch]
-symbol = ""
-style = "bg:#394260"
-format = '[ $symbol $branch ]($style)'
-
-[git_status]
-style = "bg:#394260"
-format = '[($all_status$ahead_behind )]($style)'
-
-[python]
-symbol = ""
-style = "bg:#212736"
-format = '[ $symbol ($version) ]($style)'
+[jobs]
+format = "[$symbol$number]($style) "
+style = "white"
+symbol = "[▶](blue italic)"
 
 [time]
 disabled = false
-time_format = "%R" # Hour:Minute Format
-style = "bg:#1d2230"
-format = '[  $time ]($style)'
+format = "[ $time]($style)"
+time_format = "%R"
+utc_time_offset = "local"
+style = "italic dimmed white"
 
-[os]
-style = "bg:#a3aed2"
-format = "[ $symbol ]($style)"
+[git_branch]
+format = " [$branch(:$remote_branch)]($style)"
+symbol = "[△](bold italic bright-blue)"
+style = "italic bright-blue"
+truncation_symbol = "⋯"
+truncation_length = 11
+ignore_branches = ["main", "master"]
+only_attached = true
+
+[git_metrics]
+format = '([▴$added]($added_style))([▿$deleted]($deleted_style))'
+added_style = 'italic dimmed green'
+deleted_style = 'italic dimmed red'
+ignore_submodules = true
 disabled = false
 
-[os.symbols]
-Windows = "󰍲"
-Ubuntu = "󰕈"
-SUSE = ""
-Raspbian = "󰐿"
-Mint = "󰣭"
-Macos = "󰀵"
-Manjaro = ""
-Linux = "󰌽"
-Gentoo = "󰣨"
-Fedora = "󰣛"
-Alpine = ""
-Amazon = ""
-Android = ""
-AOSC = ""
-Arch = "󰣇"
-Artix = "󰣇"
-EndeavourOS = ""
-CentOS = ""
-Debian = "󰣚"
-Redhat = "󱄛"
-RedHatEnterprise = "󱄛"
-Pop = ""
+[git_status]
+style = "bold italic bright-blue"
+format = "([⎪$ahead_behind$staged$modified$untracked$renamed$deleted$conflicted$stashed⎥]($style))"
+conflicted = "[◪◦](italic bright-magenta)"
+ahead = "[▴│[${count}](bold white)│](italic green)"
+behind = "[▿│[${count}](bold white)│](italic red)"
+diverged = "[◇ ▴┤[${ahead_count}](regular white)│▿┤[${behind_count}](regular white)│](italic bright-magenta)"
+untracked = "[◌◦](italic bright-yellow)"
+stashed = "[◃◈](italic white)"
+modified = "[●◦](italic yellow)"
+staged = "[▪┤[$count](bold white)│](italic bright-cyan)"
+renamed = "[◎◦](italic bright-blue)"
+deleted = "[✕](italic red)"
+
+[python]
+format = " [py](italic) [${symbol}${version}]($style)"
+symbol = "[⌉](bold bright-blue)⌊ "
+version_format = "${raw}"
+style = "bold bright-yellow"
+
+[nix_shell]
+style = 'bold italic dimmed blue'
+symbol = '✶'
+format = '[$symbol nix⎪$state⎪]($style) [$name](italic dimmed white)'
+impure_msg = '[⌽](bold dimmed red)'
+pure_msg = '[⌾](bold dimmed green)'
+unknown_msg = '[◌](bold dimmed yellow)'
