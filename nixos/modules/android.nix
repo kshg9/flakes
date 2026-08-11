@@ -26,6 +26,11 @@
           customSdk.androidsdk
           (pkgs.androidStudioPackages.canary.override { tiling_wm = true; })
           pkgs.jdk17
+          
+          # Wrap CLI tools so you can run them directly (like the devctrl blog post)
+          (pkgs.writeShellScriptBin "emulator" ''exec ${customSdk.androidsdk}/libexec/android-sdk/emulator/emulator "$@"'')
+          (pkgs.writeShellScriptBin "avdmanager" ''exec ${customSdk.androidsdk}/libexec/android-sdk/cmdline-tools/latest/bin/avdmanager "$@"'')
+          (pkgs.writeShellScriptBin "sdkmanager" ''exec ${customSdk.androidsdk}/libexec/android-sdk/cmdline-tools/latest/bin/sdkmanager "$@"'')
         ];
         environment.sessionVariables = {
           ANDROID_HOME = "$HOME/Android/Sdk";
