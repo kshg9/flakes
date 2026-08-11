@@ -4,6 +4,7 @@ email = "kdj@kdj"
 
 [ui]
 default-command = "status"
+diff.tool = ["difft", "--color=always", "$left", "$right"]
 
 [git]
 push-branch-prefix = "kdj/"
