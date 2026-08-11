@@ -24,12 +24,12 @@
       hjem.users.kdj = {
         packages = [
           customSdk.androidsdk
-          ((pkgs.androidStudioPackages.canary.override { tiling_wm = true; }).withSdk customSdk.androidsdk)
+          (pkgs.androidStudioPackages.canary.override { tiling_wm = true; })
           pkgs.jdk17
         ];
         environment.sessionVariables = {
-          ANDROID_HOME = "${customSdk.androidsdk}/libexec/android-sdk";
-          ANDROID_SDK_ROOT = "${customSdk.androidsdk}/libexec/android-sdk";
+          ANDROID_HOME = "$HOME/Android/Sdk";
+          ANDROID_SDK_ROOT = "$HOME/Android/Sdk";
           JAVA_HOME = "${pkgs.jdk17}";
           
           # Force Gradle to use the Nix-provided aapt2 (avoids download failures on read-only store)
