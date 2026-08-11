@@ -48,7 +48,7 @@
       # extras is now option-driven (never renamed): heavy/optional components
       # stay OFF unless flipped here. See features/extras.nix.
       extras = {
-        android.enable = true;
+        waydroid.enable = true;
       };
 
       # desktop configurations: flip ON whichever compositors you want available in SDDM.
