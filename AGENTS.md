@@ -16,7 +16,7 @@ cool ideas from them. Read this before doing anything.
   `hardware-configuration.nix`
 - `nixos/features/` — feature modules (`desktop`, `noctalia`, `nix`, `impermanence`,
   `keyd`, ...). `extras.nix` is the **option-driven** heavy/configurable bundle
-  (nvidia, vicinae; room for hysteria/dae) toggled per-system via
+  (nvidia, vicinae, chrome, kube, flutter; room for hysteria/dae) toggled per-system via
   `extras.<component>.enable` (never renamed);
   **per-user apps are NOT extras** — each user's hjem profile in `nixos/users/*.nix`
   lists its own `packages` (comment a line out to drop one);
@@ -26,7 +26,6 @@ cool ideas from them. Read this before doing anything.
   shared base, keyed on `preferences.user.name`) + per-user add-ons like `kdj.nix`
   (`userKdj` = base + kdj extras). Hosts pick `userKdj`/`userBase` per user.
 - `nixos/features/nixtools.nix` — nix tooling/direnv/nh (renamed from `nix.nix`)
-- `wrappedPrograms/` — `flake.wrappers.*` built with `nix-wrapper-modules` (no longer includes Kitty)
 - `nixos/hosts/uriel/kitty.conf` — standalone kitty config deployed to `~/.config/kitty/` via home-manager (hjem)
 - `scripts/` — `rebuild.sh`, `disko.sh`, `install.sh`, `check.sh`
 - `~/reference/` — **reference configs to steal from**: `nixconf` (vimjoyer), plus
@@ -92,17 +91,13 @@ git add -A
   - App packages (firefox/libreoffice/brightnessctl/bibata-cursors/nix-tooling) moved
     out of `environment.systemPackages` into the hjem user profile. `niri`/`kitty`
     stay in `desktop.nix` systemPackages (session-critical).
-- **overlay + theme + hjem-ext** (added 2026-08-06):
+  - **overlay + theme + hjem-ext** (added 2026-08-06):
   - `nixos/base/overlay.nix` → `flake.overlays.default` merges `self.packages`
     into nixpkgs. Wired globally with `nixpkgs.config.allowUnfree = true` via
     `nixos/base/nixpkgs-config.nix` (`self.nixosModules.nixpkgsConfig`), imported
     by every host. Killed the `selfpkgs` let-binding in all *host* modules
     (desktop.nix → `pkgs.niri/kitty`, users/* → `pkgs.*`, installer →
     `pkgs.changepass`).
-    **Cycle guard:** the overlay must NOT be applied to the perSystem pkgs that
-    build `self.packages` themselves — so `wrappedPrograms/*` internal
-    cross-refs (`fish.nix → selfpkgs.starship`, `environment.nix →
-    selfpkgs.yazi/qalc`) intentionally STILL use `selfpkgs`.
   - `nixos/base/theme.nix` → `options.flake.ctp` (`{flavor;accent;}` submodule,
     default mocha/mauve) + derived `config.flake.ctpPalette` (base/accent hex).
     Captured in an **outer `let`** before entering `flake.wrappers.*` because the
@@ -146,15 +141,14 @@ git add -A
 
 ### App sandpack
 - [ ] **tldeer** — Rust rewrite of `tldr` (user's pick, distinct from tealdeer). NOT in nixpkgs
-  as `tldeer`; source via flake input/overlay. NOTE: wrapper-modules only ships a `tealdeer`
-  wrapper, so tldeer gets its own `wrappedPrograms/tldeer.nix` (or plain package)
+  as `tldeer`; source via flake input/overlay. NOTE: needs its own custom package.
 - [ ] **obsidian / anki / vesktop** — add to packages (vesktop config via hjem when per-user)
 - [ ] **tuxedo** — an obsidian like todo list; see `lunix/modules/cli/tools/tuxedo.nix`
 - [x] **vscode → vscodium** — done 2026-08-08: kdj packages use stock `vscodium-fhs` (open-vsx marketplace); the hand-made `packages/vscodium.nix` (MS marketplace) was deleted the same day
 - [ ] **firefox + chromium** — firefox already `programs.firefox`; add `chromium`
-- [ ] **git wrapper module** — `wrappedPrograms/git.nix` via `wlib.wrapperModules.git`
-- [ ] **jujutsu wrapper module** — `wrappedPrograms/jujutsu.nix` via `wlib.wrapperModules.jujutsu`
-- [ ] **lazygit** — NO wrapper module exists in wrapper-modules; configure via hjem `config.files` (config.toml)
+- [ ] **git** — move to hjem via `config.files` (config.toml)
+- [ ] **jujutsu** — move to hjem via `config.files` (config.toml)
+- [ ] **lazygit** — configure via hjem `config.files` (config.toml)
 - [ ] **rclone** — add to packages (later)
 - [x] **sops** — done pivot 2026-08-09, sandbox POC validated then reverted (sandbox needs no secrets): **TWO-KEY, per-host-file model** — personal editing key `~/.config/sops/age/keys.txt` (sops CLI key) + per-host boot key `/var/lib/sops-nix/key.txt` (`generateKey`). `nixos/features/sops.nix` is GENERIC (keyFile + CLI only); `sops.secrets.*` + `defaultSopsFile` are declared PER-HOST in the host's `configuration.nix` (uriel: `secrets/uriel.yaml` `[&kdj,&uriel]`). Boot-key persistence lives in `features/impermanence.nix`. `.sops.yaml` has real per-file `creation_rules` + real pubkeys (kdj, uriel). Non-interactive add/edit = `jaq -Rs .`+`sops set --value-file FILE INDEX VALUE`. Full add-a-host runbook + jaq traps in `KB/sops.md`. **kdj's ssh keys are passphrase-protected → never usable as boot keys (verified)**.
 
@@ -179,10 +173,10 @@ git add -A
 - [x]  retire `config.base.user.nix` `preferences.user.name` — option deleted; `self.userBase = (name: ...)` factory in `users/base.nix` takes its place
 
 ### Guest user `yjh` (restricted, self-cleaning)
-- [ ]  `users.users.yjh`: `isNormalUser`, NO `wheel` (no sudo; root has no password), only `lp` group if printing allowed
-- [ ]  restrict apps: dev tooling (`helix`, `vscodium`, `opencode`…) already moved into kdj's hjem profile; `general.nix` systemPackages now only `changepass`. REMAINING: yjh's hjem profile carries only allowed apps + no `nix` (can't self-install) — verify `nix` isn't in guest's closure
-- [ ]  weekly wipe: `systemd.timer` (`OnCalendar=weekly`, `Persistent=true`) → `loginctl terminate-user yjh`, `rsync --delete` pristine template back to `/home/yjh`, fix ownership; home is also already unpersisted under impermanence (wiped on reboot)
-- [ ]  sandbox `biyoo` is ephemeral/dev-only — the same wipe/timer machinery is NOT for it
+- [x]  `users.users.yjh`: `isNormalUser`, NO `wheel` (no sudo; root has no password), only `lp` group if printing allowed
+- [x]  restrict apps: dev tooling (`helix`, `vscodium`, `opencode`…) already moved into kdj's hjem profile; `general.nix` systemPackages now only `changepass`. REMAINING: yjh's hjem profile carries only allowed apps + no `nix` (can't self-install) — verify `nix` isn't in guest's closure
+- [x]  weekly wipe: `systemd.timer` (`OnCalendar=weekly`, `Persistent=true`) → `loginctl terminate-user yjh`, `rsync --delete` pristine template back to `/home/yjh`, fix ownership; home is also already unpersisted under impermanence (wiped on reboot)
+- [x]  sandbox `biyoo` is ephemeral/dev-only — the same wipe/timer machinery is NOT for it
 
 ### Ruixi-rebirth inspirations (tracked in `KB/ruixi-inspiration.md`)
 - [x] **mpv + Anime4K** — mpv configured with Anime4K shaders natively via hjem + pkgs.fetchzip

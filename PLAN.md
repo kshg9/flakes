@@ -169,13 +169,7 @@ flakes/
 ├── packages/                        # standalone derivations
 │   ├── changepass.nix / .sh
 │   └── maximizer/
-│
-├── wrappedPrograms/                  # nix-wrapper-modules wrappers
-│   ├── environment.nix
-│   ├── fish.nix
-│   ├── qalc.nix
-│   └── starship.nix
-│
+
 ├── scripts/                         # operational scripts
 └── assets/                          # user avatars (.face icons)
 ```
@@ -340,47 +334,6 @@ long nix command:
 
 ---
 
-## Part 4 — Wrapper Module Rationalization
-
-### 4.1 The `selfpkgs` vs `pkgs` split is a historical artifact
-
-The overlay (`base/overlay.nix`) already merges `self.packages` into `pkgs` for
-NixOS modules. But `wrappedPrograms/` still uses `selfpkgs` for cross-references
-(fish → starship, environment → yazi/qalc) because the overlay can't be applied
-to the `perSystem` pkgs that *build* the wrappers (cycle).
-
-This is documented and correct — but it means there are two idioms for getting
-a package: `pkgs.foo` in NixOS modules, `selfpkgs.foo` in wrappers. New
-contributors (or future-you) will get confused.
-
-> [!TIP]
-> **Proposed:** Add a one-line comment at the top of each wrapper file:
-> ```nix
-> # NOTE: use `selfpkgs.X` here (not pkgs.X) — see AGENTS.md "Cycle guard".
-> ```
-> And link to a KB entry. This isn't a code change; it's a maintenance
-> investment.
-
----
-
-### 4.2 Consider migrating remaining wrappers to hjem
-
-You've already migrated kitty, yazi, niri, and helix from wrappers to hjem
-dotfiles. The remaining wrappers are:
-
-| Wrapper | What it does | Hjem candidate? |
-|---|---|---|
-| `environment.nix` | Fish shell + CLI tools bundled as login shell | **No** — this is the one legitimate use of wrapper-modules (bundled `$PATH` in a single derivation as `users.users.*.shell`). Keep it. |
-| `fish.nix` | Fish config (zoxide, starship init, yazi function) | **Maybe** — could be a dotfile at `files/fish/config.fish`, but the `selfpkgs.starship` init complicates it. Keep as wrapper for now. |
-| `starship.nix` | Starship prompt config | **Maybe** — small TOML config, could go via `ext.programs.starship`. But it's consumed by `fish.nix` via the wrapper chain, so keep it. |
-| `qalc.nix` | Qalc flags wrapper | **No** — pure CLI flag injection, wrapper-modules' sweet spot. |
-
-> [!IMPORTANT]
-> **Verdict:** The remaining wrappers are the *right* things to keep as
-> wrappers. Don't migrate them. But document this decision so future-you
-> doesn't re-ask the question.
-
----
 
 ## Part 5 — Code Hygiene
 
