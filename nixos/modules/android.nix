@@ -14,6 +14,7 @@
   in {
     config = lib.mkIf config.extras.android.enable {
       users.groups.adbusers.members = [ "kdj" ];
+      users.groups.kvm.members = [ "kdj" ];
       virtualisation.waydroid.enable = true;
       
       environment.systemPackages = with pkgs; [
