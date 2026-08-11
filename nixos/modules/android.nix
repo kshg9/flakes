@@ -1,13 +1,8 @@
-{ inputs, ... }: {
+{ ... }: {
   flake.nixosModules.android = { pkgs, config, lib, ... }: let
-    android-sdk = inputs.android-nixpkgs.sdk.${pkgs.stdenv.hostPlatform.system} (sdkPkgs: with sdkPkgs; [
-      cmdline-tools-latest
-      build-tools-36-0-0
-      platform-tools
-      platforms-android-37-0
-      sources-android-37-0
-      emulator
-    ]);
+    predefine = pkgs.androidenv.androidPkgs;
+    buildToolsVersion = (builtins.head predefine.build-tools).version;
+    aapt2Path = "${predefine.androidsdk}/libexec/android-sdk/build-tools/${buildToolsVersion}/aapt2";
   in {
     config = lib.mkIf config.extras.android.enable {
       users.groups.adbusers.members = [ "kdj" ];
@@ -19,14 +14,17 @@
 
       hjem.users.kdj = {
         packages = [
-          android-sdk
-          pkgs.androidStudioPackages.stable
+          predefine.androidsdk
+          (pkgs.androidStudioPackages.canary.override { tiling_wm = true; })
           pkgs.jdk17
         ];
         environment.sessionVariables = {
-          ANDROID_HOME = "${android-sdk}/libexec/android-sdk";
-          ANDROID_SDK_ROOT = "${android-sdk}/libexec/android-sdk";
+          ANDROID_HOME = "${predefine.androidsdk}/libexec/android-sdk";
+          ANDROID_SDK_ROOT = "${predefine.androidsdk}/libexec/android-sdk";
           JAVA_HOME = "${pkgs.jdk17}";
+          
+          # Force Gradle to use the Nix-provided aapt2 (avoids download failures on read-only store)
+          GRADLE_OPTS = "-Dorg.gradle.project.android.aapt2FromMavenOverride=${aapt2Path}";
         };
       };
     };
