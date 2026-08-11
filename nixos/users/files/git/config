@@ -1,0 +1,18 @@
+[user]
+	name = kdj
+	email = kdj@kdj
+
+[core]
+	sshCommand = ssh -i ~/.ssh/id_ed25519_gh
+
+[url "git@github.com:"]
+	insteadOf = https://github.com/
+
+[init]
+	defaultBranch = main
+
+[pull]
+	rebase = false
+
+[push]
+	autoSetupRemote = true

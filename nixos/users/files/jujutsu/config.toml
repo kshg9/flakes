@@ -1,0 +1,9 @@
+[user]
+name = "kdj"
+email = "kdj@kdj"
+
+[ui]
+default-command = "status"
+
+[git]
+push-branch-prefix = "kdj/"

@@ -32,6 +32,7 @@
 !autostart
 !dunstrc
 !themerc
+!config
 !*.config
 !*.xml
 !*.css

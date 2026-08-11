@@ -43,6 +43,8 @@
             ./files/helix/catppuccin_mocha-transparent.toml;
           "nvim/init.lua".source = ./files/nvim/init.lua;
           "sioyek/prefs_user.config".source = ./files/sioyek/prefs_user.config;
+          "git/config".source = ./files/git/config;
+          "jj/config.toml".source = ./files/jujutsu/config.toml;
         };
         # kdj-only extras on top of the shared base. Keep the base in base.nix;
         # only what is specific to kdj goes here. This is where dev tooling lives
@@ -70,6 +72,8 @@
           nix-diff
           hydra-check
           treefmt
+          direnv
+          jujutsu
           
           # CLI tools & utils
           pciutils
