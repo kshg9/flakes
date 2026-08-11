@@ -9,16 +9,15 @@
         ]
       },
       "locked": {
-        "lastModified": 1786394483,
-        "narHash": "sha256-EOFqK5nVJtWib1vf0AiLmJYgxNUiCgZq9mxcmkiUBF0=",
+        "lastModified": 1786394466,
+        "narHash": "sha256-XZmn2VpAq/e+3OFco5DL7rG6PPzxc5n4IxsRZQ6tyzo=",
         "owner": "tadfisher",
         "repo": "android-nixpkgs",
-        "rev": "8c49744635bbf103f55560da8d12ca0f2036bf75",
+        "rev": "5913a865f6f37804fd5211081e0d24acdcf13002",
         "type": "github"
       },
       "original": {
         "owner": "tadfisher",
-        "ref": "stable",
         "repo": "android-nixpkgs",
         "type": "github"
       }
