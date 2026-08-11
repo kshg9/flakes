@@ -2,7 +2,10 @@
   flake.nixosModules.nixpkgsConfig = {
     # Global nixpkgs settings for every NixOS configuration in this flake.
     nixpkgs = {
-      config.allowUnfree = true;
+      config = {
+        allowUnfree = true;
+        android_sdk.accept_license = true;
+      };
 
       # Overlay merges this flake's `self.packages` (wrapped programs, plain
       # packages) into nixpkgs so modules can use `pkgs.<name>` directly.
