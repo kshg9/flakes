@@ -6,7 +6,6 @@
       
       environment.systemPackages = with pkgs; [
         android-tools
-        scrcpy
       ];
 
       hjem.users.kdj = {
