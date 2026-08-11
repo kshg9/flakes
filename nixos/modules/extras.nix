@@ -19,6 +19,7 @@
         nvidia.enable = lib.mkEnableOption "the NVIDIA GPU driver stack";
         vicinae.enable = lib.mkEnableOption "the vicinae CLI";
         android.enable = lib.mkEnableOption "the Android development stack";
+        flutter.enable = lib.mkEnableOption "Flutter development SDK and dependencies";
         chrome.enable = lib.mkEnableOption "Google Chrome / Chromium browsers";
         kube.enable = lib.mkEnableOption "Kubernetes tooling (kubectl, k3d, helm)";
       };
@@ -27,6 +28,7 @@
         self.nixosModules.nvidia
         self.nixosModules.vicinae
         self.nixosModules.android
+        self.nixosModules.flutter
         self.nixosModules.chrome
         self.nixosModules.kube
       ];
