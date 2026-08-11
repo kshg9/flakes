@@ -4,6 +4,7 @@ mcfly init fish | source
 direnv hook fish | source
 
 alias cd="z"
+set -g fish_greeting ""
 alias cat="bat"
 alias find="fd"
 alias ls="eza"
