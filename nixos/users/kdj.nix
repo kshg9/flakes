@@ -37,6 +37,10 @@
         # helix: kdj-only editor. Stock nixpkgs `helix` reads ~/.config/helix;
         # config.toml selects the custom kanagawa-transparent theme (inherits the
         # bundled kanagawa, unsets the opaque bg scopes → transparent).
+        files = {
+          ".ssh/config".source = ./files/ssh/config;
+        };
+
         xdg.config.files = {
           "helix/config.toml".source = ./files/helix/config.toml;
           "helix/themes/catppuccin_mocha-transparent.toml".source =
@@ -44,6 +48,9 @@
           "nvim/init.lua".source = ./files/nvim/init.lua;
           "sioyek/prefs_user.config".source = ./files/sioyek/prefs_user.config;
           "git/config".source = ./files/git/config;
+          "git/config.github".source = ./files/git/config.github;
+          "git/config.codeberg".source = ./files/git/config.codeberg;
+          "git/config.tangled".source = ./files/git/config.tangled;
           "jj/config.toml".source = ./files/jujutsu/config.toml;
         };
         # kdj-only extras on top of the shared base. Keep the base in base.nix;
@@ -72,7 +79,6 @@
           nix-diff
           hydra-check
           treefmt
-          direnv
           jujutsu
           
           # CLI tools & utils

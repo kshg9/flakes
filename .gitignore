@@ -33,6 +33,7 @@
 !dunstrc
 !themerc
 !config
+!config.*
 !*.config
 !*.xml
 !*.css
