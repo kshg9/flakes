@@ -20,7 +20,7 @@
       hjem.users.kdj = {
         packages = [
           android-sdk
-          (pkgs.androidStudioPackages.canary.override { tiling_wm = true; })
+          (pkgs.androidStudioPackages.stable.override { tiling_wm = true; })
           pkgs.jdk17
         ];
         environment.sessionVariables = {
