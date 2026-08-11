@@ -31,6 +31,8 @@
           self.nixosModules.sops
           self.nixosModules.extras
           self.nixosModules.tailscale
+          self.nixosModules.docker
+          self.nixosModules.qemu
 
           # per-user hjem profiles (kdj = full, yjh = restricted guest)
           self.nixosModules.userKdj
@@ -45,7 +47,9 @@
 
       # extras is now option-driven (never renamed): heavy/optional components
       # stay OFF unless flipped here. See features/extras.nix.
-      extras.enable = false;
+      extras = {
+        android.enable = true;
+      };
 
       # desktop configurations: flip ON whichever compositors you want available in SDDM.
       # Both can be ON simultaneously — the session picker shows all enabled.
@@ -70,6 +74,7 @@
        sops.defaultSopsFile = ./../../../secrets/uriel.yaml;
        sops.secrets.github_ssh_private_key = {
          # keyed to kdj so the user's git can read it (default root:root)
+         path = "/home/kdj/.ssh/id_ed25519";
          owner = "kdj";
          group = "users";
          mode = "0600";
@@ -77,8 +82,9 @@
        sops.secrets.github_ssh_pubkey = {
          # pubkey is public — readable by any user in the `keys` group
          # (dir /run/secrets is root:keys).
-         owner = "root";
-         group = "keys";
+         path = "/home/kdj/.ssh/id_ed25519.pub";
+         owner = "kdj";
+         group = "users";
          mode = "0444";
        };
 

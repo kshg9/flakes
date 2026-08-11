@@ -27,7 +27,7 @@
       hjem.extraModules = [
         ({ config, ... }: {
           # The focus-ring accent is the catppuccin default (mauve #cba6f7);
-          xdg.config.files."niri/config.kdl".source = ../base/files/niri/config.kdl;
+          xdg.config.files."niri/config.kdl".source = ../users/files/niri/config.kdl;
 
           # noctalia (the bar/shell) — validated at build time, survives
           # rebuilds declaratively.

@@ -12,6 +12,7 @@
       imports = [
         (self.userBase user)
         self.nixosModules.llm-agents
+        self.nixosModules.firefox
       ];
 
       # Password lives in a file on the persisted subvol (/persist/passwords/kdj),
@@ -38,15 +39,16 @@
         # bundled kanagawa, unsets the opaque bg scopes → transparent).
         xdg.config.files = {
           "helix/config.toml".source = ./files/helix/config.toml;
-          "helix/themes/kanagawa-transparent.toml".source =
-            ./files/helix/kanagawa-transparent.toml;
+          "helix/themes/catppuccin_mocha-transparent.toml".source =
+            ./files/helix/catppuccin_mocha-transparent.toml;
+          "nvim/init.lua".source = ./files/nvim/init.lua;
+          "sioyek/prefs_user.config".source = ./files/sioyek/prefs_user.config;
         };
         # kdj-only extras on top of the shared base. Keep the base in base.nix;
         # only what is specific to kdj goes here. This is where dev tooling lives
         # (a restricted guest like yjh never sees these).
         packages = with pkgs; [
           # kdj's personal / desktop apps
-          firefox
           # chromium
           #obsidian
           #anki-bin
@@ -57,14 +59,29 @@
 
           # dev tools specific to this founder
           vscodium-fhs
-          emacs
+          emacs-pgtk
           helix
+          tmux
+          zk
+          neovim
           nixd
           statix
           nixfmt
           nix-diff
           hydra-check
           treefmt
+          
+          # CLI tools & utils
+          pciutils
+          psmisc
+          socat
+          sops
+          lsof
+          rustscan
+          onefetch
+          
+          # Apps
+          sioyek
         ];
       };
     };

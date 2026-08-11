@@ -37,6 +37,8 @@
 
       time.timeZone = "Asia/Kolkata";
 
+      services.fwupd.enable = true;
+
       i18n.defaultLocale = "en_IN";
       i18n.extraLocaleSettings = {
         LC_ADDRESS = "en_IN";
@@ -49,6 +51,8 @@
         LC_TELEPHONE = "en_IN";
         LC_TIME = "en_IN";
       };
+
+      programs.fish.enable = true;
 
       services.upower.enable = true;
       security.polkit.enable = true;

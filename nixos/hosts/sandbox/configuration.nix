@@ -55,8 +55,7 @@
       # extras is OFF on sandbox by default — machine-level heavy/configurable
       # modules only (nvidia, vicinae, …; see KB/module-toggle.md). Per-user apps
       # are managed in each user's hjem profile instead.
-      extras.enable = false;
-
+      
       system.stateVersion = "26.05";
 
       # Plain build-vm test box — no disko, no LUKS, no impermanence. A clean,

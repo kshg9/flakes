@@ -22,8 +22,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    wrapper-modules.url = "github:BirdeeHub/nix-wrapper-modules";
-
     hjem = {
       url = "github:feel-co/hjem";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -36,25 +34,20 @@
     };
 
     vicinae.url = "github:vicinaehq/vicinae";
-
-    # Noctalia v5 desktop shell. Pin the `cachix` branch (latest cached commit)
-    # so prebuilt binaries from noctalia.cachix.org are used. Deliberately does
-    # NOT follow nixpkgs — a follows would change the derivation hash and miss
-    # the cache.
-    noctalia = {
-      url = "github:noctalia-dev/noctalia/cachix";
-    };
+    noctalia.url = "github:noctalia-dev/noctalia/cachix";
 
     # UEFI Secure Boot via Lanzaboote (replaces systemd-boot signing).
-    lanzaboote.url = "github:nix-community/lanzaboote";
-
-    mac-style-plymouth = {
-      url = "github:SergioRibera/s4rchiso-plymouth-theme";
+    lanzaboote = {
+      url = "github:nix-community/lanzaboote";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     llm-agents = {
       url = "github:numtide/llm-agents.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    android-nixpkgs = {
+      url = "github:tadfisher/android-nixpkgs/stable";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -73,9 +66,16 @@
       mkFlake = inputs.flake-parts.lib.mkFlake { inherit inputs; };
     in
     mkFlake {
-      imports = importTree ./.
-        # enables the `flake.wrappers.*` option used by wrappedPrograms/
-        ++ [ inputs.wrapper-modules.flakeModules.wrappers ]
+      imports = importTree ./nixos/hosts
+        ++ importTree ./nixos/modules
+        ++ importTree ./nixos/base
+        ++ importTree ./packages
+        ++ [
+          ./nixos/users/base.nix
+          ./nixos/users/kdj.nix
+          ./nixos/users/yjh.nix
+          ./nixos/users/biyoo.nix
+        ]
         # declares `flake.diskoConfigurations` so multiple hosts can define it
         ++ [ inputs.disko.flakeModules.default ];
       systems = [ "x86_64-linux" ];

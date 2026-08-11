@@ -66,9 +66,10 @@ in {
         };
       };
     in {
-      base = uv.flavor_hex.${c.flavor};
-      accent = uv.accent_hex.${c.accent};
-      surface = "#313244";
-      surfaceRGB = "#5b6078";
+      # Kanagawa colors
+      base = "#1f1f28";
+      accent = "#957fb8"; # oniViolet
+      surface = "#2a2a37";
+      surfaceRGB = "#54546d";
     };
 }

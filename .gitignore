@@ -23,6 +23,7 @@
 !*.toml
 !*.kdl
 !*.lua
+!*.fish
 !*.yaml
 !*.jpg
 

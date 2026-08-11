@@ -17,7 +17,7 @@ cool ideas from them. Read this before doing anything.
 - `nixos/features/` — feature modules (`desktop`, `noctalia`, `nix`, `impermanence`,
   `keyd`, ...). `extras.nix` is the **option-driven** heavy/configurable bundle
   (nvidia, vicinae; room for hysteria/dae) toggled per-system via
-  `extras.<component>.enable` (never renamed) with a HARD `extras.enable` master;
+  `extras.<component>.enable` (never renamed);
   **per-user apps are NOT extras** — each user's hjem profile in `nixos/users/*.nix`
   lists its own `packages` (comment a line out to drop one);
   `cachix.nix` binary caches are always-on (imported directly by both hosts).
@@ -67,8 +67,8 @@ nixos-rebuild build-vm --flake '.#sandbox' && ./result/bin/run-vm-sandbox
 # installer ISO (Calamares, embeds flake source) — see KB/installer-iso.md
 scripts/build-iso.sh
 
-# toggle extras OFF/ON: it's a per-system option now (never rename!).
-#   uriel: set `extras.enable = true` (or `extras.nvidia.enable = true`, …) in
+# toggle extras ON/OFF: it's a per-system option now (never rename!).
+#   uriel: set `extras.android.enable = true` in
 #   nixos/hosts/uriel/configuration.nix — see KB/module-toggle.md.
 # legacy rename-toggle only for leaf modules: git mv X.nix _X.nix   # OFF
 
@@ -124,16 +124,8 @@ git add -A
     `pkgs.niri`; config = pluie-style file `nixos/users/files/niri/config.kdl`
     sourced via `xdg.config.files."niri/config.kdl".source` in kdj.nix (needs
     `!*.kdl` gitignore allowlist + git add).
-  - **kitty + yazi → hjem** (added 2026-08-06, same as niri): both wrappers
-    deleted; stock `pkgs.kitty`/`pkgs.yazi`. Shared dotfiles in base.nix from
-    `nixos/users/files/{kitty,yazi}/`: `kitty.conf`, `yazi.toml`, `yazi/init.lua`,
-    and the full-border plugin symlinked from `${pkgs.yaziPlugins.full-border}`
-    into `yazi/plugins/full-border.yazi`. yazi reads ~/.config/yazi (the wrapper
-    used to set YAZI_CONFIG_HOME to a store dir). `environment.nix` now uses
-    `pkgs.yazi` (nixpkgs); qalc stays wrapped. Configs were byte-captured from
-    the old toKeyValue/toKdl renderers (needs `!*.lua` too). Remaining wrappers:
-    `environment`, `fish`, `qalc`, `starship` + plain packages `changepass`,
-    `maximizer`, `vicinae`.
+  - **kitty + yazi + shell → hjem**: wrappers deleted; stock `pkgs.kitty`, `pkgs.yazi`, `pkgs.fish`, etc. Shared dotfiles in base.nix from
+    `nixos/users/files/{kitty,yazi,starship,fish}/`. The `environment`, `fish`, `qalc`, and `starship` wrappers have been deleted, and their tools moved to `base.nix` packages. Remaining plain packages: `changepass`, `maximizer`, `vicinae`.
 - login: **SDDM** (KDE default) configured via `modules/desktop.nix`. `qylock` removed (no custom lockscreen; `Mod+Shift+Q` lock keybind removed
   from `niri.nix`)
 - host: real machine `uriel` (disko + impermanence + printer + extras option OFF, cachix always-on)
@@ -167,7 +159,7 @@ git add -A
 - [x] **sops** — done pivot 2026-08-09, sandbox POC validated then reverted (sandbox needs no secrets): **TWO-KEY, per-host-file model** — personal editing key `~/.config/sops/age/keys.txt` (sops CLI key) + per-host boot key `/var/lib/sops-nix/key.txt` (`generateKey`). `nixos/features/sops.nix` is GENERIC (keyFile + CLI only); `sops.secrets.*` + `defaultSopsFile` are declared PER-HOST in the host's `configuration.nix` (uriel: `secrets/uriel.yaml` `[&kdj,&uriel]`). Boot-key persistence lives in `features/impermanence.nix`. `.sops.yaml` has real per-file `creation_rules` + real pubkeys (kdj, uriel). Non-interactive add/edit = `jaq -Rs .`+`sops set --value-file FILE INDEX VALUE`. Full add-a-host runbook + jaq traps in `KB/sops.md`. **kdj's ssh keys are passphrase-protected → never usable as boot keys (verified)**.
 
 ### Boot
-- [ ]  **plymouth (LUKS decrypt)**: add flake input `mac-style-plymouth = { url = "github:SergioRibera/s4rchiso-plymouth-theme"; inputs.nixpkgs.follows = "nixpkgs"; }` (themes the `/dev/mapper/enc` unlock prompt); enable `boot.plymouth.enable` in `uriel` (runs before LUKS passphrase) and wire theme
+
 - [x]  **lanzaboote (Secure Boot)**: flake input `lanzaboote` (`github:nix-community/lanzaboote`) + `inputs.lanzaboote.nixosModules.lanzaboote` + `boot.lanzaboote.enable`. Implemented as toggle-able feature `nixos/features/lanzaboote.nix` (`flake.nixosModules.lanzaboote`), imported by uriel via `lib.optional (self ? nixosModules.lanzaboote)` — rename `lanzaboote.nix`→`_lanzaboote.nix` to fall back to systemd-boot. Forces `boot.loader.systemd-boot.enable = false`; `pkiBundle = "/etc/secureboot"` (persisted via `persistence.directories` → `/persist/system`); `autoGenerateKeys`+`autoEnrollKeys` on (generates keys first boot, exports .auth to ESP, next reboot in Setup Mode enrolls them). Need: put firmware into Setup Mode once, then reboot; verify with `sbctl status`/`bootctl status`. **Verify UEFI + LUKS/plymouth interplay before enabling.**
 
 ### Helix
@@ -193,8 +185,7 @@ git add -A
 - [ ]  sandbox `biyoo` is ephemeral/dev-only — the same wipe/timer machinery is NOT for it
 
 ### Ruixi-rebirth inspirations (tracked in `KB/ruixi-inspiration.md`)
-- [ ] **emanote** — note-taking / static site generator (https://emanote.srid.ca/start)
-- [ ] **mpv + Anime4K** — mpv configured with Anime4K shaders
+- [x] **mpv + Anime4K** — mpv configured with Anime4K shaders natively via hjem + pkgs.fetchzip
 - [ ] **ruixi-style launcher/search** — explore search launcher UI from ruixi-rebirth
 - [ ] **modular ssh & zoxide** — split ssh & zoxide configs into separate dotfile modules
 - [ ] **android setup** — adb, scrcpy, udev rules & android environment

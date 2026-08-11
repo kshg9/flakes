@@ -22,12 +22,27 @@
       ];
     };
 
-    programs.nix-ld.enable = true;
+    programs.nix-ld = {
+      enable = true;
+      libraries = with pkgs; [ 
+        zlib
+        openssl
+        stdenv.cc.cc.lib
+       ];
+    };
+
+    programs.appimage = {
+      enable = true;
+      binfmt = true;
+    };
 
     programs.nh = {
       enable = true;
-      clean.enable = true;
-      flake = "/etc/nixos/flakes";
+      clean = {
+        enable = true;
+        extraArgs = "--keep 10 --keep-since 3d";
+      };
+      flake = "/home/kdj/flakes";
     };
   };
 }
