@@ -1,8 +1,8 @@
 { ... }: {
   flake.nixosModules.android = { pkgs, config, lib, ... }: let
     customSdk = pkgs.androidenv.composeAndroidPackages {
-      buildToolsVersions = [ "36.0.0" ];
-      platformVersions = [ "37" ];
+      buildToolsVersions = [ "34.0.0" "35.0.0" "36.0.0" ];
+      platformVersions = [ "34" "35" "36" "37" ];
       includeSources = true;
       includeEmulator = true;
       includeSystemImages = true;
