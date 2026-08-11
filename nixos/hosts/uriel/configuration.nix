@@ -48,7 +48,7 @@
       # extras is now option-driven (never renamed): heavy/optional components
       # stay OFF unless flipped here. See features/extras.nix.
       extras = {
-        waydroid.enable = true;
+        waydroid.enable = false;
       };
 
       # desktop configurations: flip ON whichever compositors you want available in SDDM.
@@ -83,6 +83,30 @@
          # pubkey is public — readable by any user in the `keys` group
          # (dir /run/secrets is root:keys).
          path = "/home/kdj/.ssh/id_ed25519.pub";
+         owner = "kdj";
+         group = "users";
+         mode = "0444";
+       };
+       sops.secrets.codeberg_ssh_private_key = {
+         path = "/home/kdj/.ssh/id_ed25519_cb";
+         owner = "kdj";
+         group = "users";
+         mode = "0600";
+       };
+       sops.secrets.codeberg_ssh_pubkey = {
+         path = "/home/kdj/.ssh/id_ed25519_cb.pub";
+         owner = "kdj";
+         group = "users";
+         mode = "0444";
+       };
+       sops.secrets.tangled_ssh_private_key = {
+         path = "/home/kdj/.ssh/id_ed25519_tangled";
+         owner = "kdj";
+         group = "users";
+         mode = "0600";
+       };
+       sops.secrets.tangled_ssh_pubkey = {
+         path = "/home/kdj/.ssh/id_ed25519_tangled.pub";
          owner = "kdj";
          group = "users";
          mode = "0444";
