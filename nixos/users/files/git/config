@@ -1,6 +1,6 @@
 [user]
 	name = kdj
-	email = kdj@kdj
+	email = kshg9+git@proton.me
 
 [init]
 	defaultBranch = main
@@ -19,3 +19,18 @@
 
 [includeIf "hasconfig:remote.*.url:*tangled.sh*"]
 	path = ~/.config/git/config.tangled
+
+[diff]
+	tool = difftastic
+
+[difftool]
+	prompt = false
+
+[difftool "difftastic"]
+	cmd = difft "$LOCAL" "$REMOTE"
+
+[pager]
+	difftool = true
+
+[alias]
+	d = difftool

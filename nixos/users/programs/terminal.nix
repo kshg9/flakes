@@ -8,6 +8,7 @@
     kitty
     yazi
     git
+    difftastic
     eza
     fd
     bat
