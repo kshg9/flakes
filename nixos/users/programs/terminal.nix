@@ -22,7 +22,6 @@
     helix
     libqalculate
     starship
-    mcfly
     wlsunset
     nautilus
   ];

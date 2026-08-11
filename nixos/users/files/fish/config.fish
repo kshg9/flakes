@@ -1,6 +1,6 @@
 zoxide init fish | source
 starship init fish | source
-mcfly init fish | source
+fzf --fish | source
 direnv hook fish | source
 
 alias cd="z"
