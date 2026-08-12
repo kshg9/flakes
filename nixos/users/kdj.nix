@@ -23,7 +23,7 @@
       # anymore; opts in right here.
       users.users.${user} = {
         hashedPasswordFile = "/persist/passwords/${user}";
-        extraGroups = [ "wheel" "networkmanager" "keys" ];
+        extraGroups = [ "wheel" "networkmanager" "keys" "libvirtd" "lp" "lpadmin" "docker" ];
       };
 
       # ===== hjem: kdj's home profile =========================================

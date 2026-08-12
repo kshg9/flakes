@@ -30,7 +30,7 @@
         # root:keys 750). No wheel (no sudo; root has no password, so su is a
         # dead end too). Private keys stay 0600 root/kdj so yjh still can't
         # read those — only the pubkey is group readable.
-        extraGroups = [ "keys" ];
+        extraGroups = [ "keys" "libvirtd" "lp" "docker" "lpadmin" ];
         hashedPasswordFile = "/persist/passwords/${user}";
       };
 

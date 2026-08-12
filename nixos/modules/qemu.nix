@@ -14,6 +14,5 @@
     
     networking.firewall.trustedInterfaces = [ "virbr0" ];
     programs.dconf.enable = true;
-    users.groups.libvirtd.members = [ "kdj" "yjh" ];
   };
 }
