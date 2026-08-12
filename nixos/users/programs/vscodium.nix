@@ -6,6 +6,7 @@
       vscode = vscodium-fhs;
       vscodeExtensions = with vscode-extensions; [
         jnoortheen.nix-ide
+        yoavbls.pretty-ts-errors
       ];
     })
   ];
