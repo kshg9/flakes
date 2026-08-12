@@ -52,6 +52,8 @@
           "git/config.codeberg".source = ./files/git/config.codeberg;
           "git/config.tangled".source = ./files/git/config.tangled;
           "jj/config.toml".source = ./files/jujutsu/config.toml;
+          "VSCodium/User/settings.json".source = ./files/vscodium/settings.json;
+          "VSCodium/User/keybindings.json".source = ./files/vscodium/keybindings.json;
         };
         # kdj-only extras on top of the shared base. Keep the base in base.nix;
         # only what is specific to kdj goes here. This is where dev tooling lives
@@ -67,7 +69,12 @@
           #tealdeer
 
           # dev tools specific to this founder
-          vscodium-fhs
+          (vscode-with-extensions.override {
+            vscode = vscodium-fhs;
+            vscodeExtensions = with vscode-extensions; [
+              jnoortheen.nix-ide
+            ];
+          })
           emacs-pgtk
           helix
           tmux

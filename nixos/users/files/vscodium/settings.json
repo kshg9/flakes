@@ -1,0 +1,33 @@
+{
+    "window.zoomLevel": 1,
+    "terminal.integrated.fontFamily": "CommitMono Nerd Font Mono",
+    "terminal.integrated.stickyScroll.enabled": false,
+    "editor.fontFamily": "CommitMono Nerd Font Mono",
+    "editor.fontLigatures": true,
+    "editor.tabSize": 2,
+    "editor.minimap.autohide": "mouseover",
+    "editor.wordWrap": "off",
+    "editor.wordWrapColumn": 120,
+    "editor.codeLens": true,
+    "editor.renderWhitespace": "boundary",
+    "editor.linkedEditing": true,
+    "editor.formatOnSave": true,
+    "files.autoSave": "afterDelay",
+    "files.autoSaveDelay": 1000,
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+    "workbench.iconTheme": "vscode-icons",
+    "git.openRepositoryInParentFolders": "never",
+    "vsicons.dontShowNewVersionMessage": true,
+    "workbench.sideBar.location": "right",
+    "search.exclude": {
+        "**/node_modules": true
+    },
+    "security.workspace.trust.untrustedFiles": "open",
+    "workbench.startupEditor": "none",
+    "chat.disableAIFeatures": true,
+    "js/ts.experimental.useTsgo": true,
+    "explorer.confirmDragAndDrop": false,
+    "nix.enableLanguageServer": true,
+    "nix.serverPath": "nixd"
+}

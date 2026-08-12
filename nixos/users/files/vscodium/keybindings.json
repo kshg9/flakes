@@ -1,0 +1,112 @@
+[
+  // 1. If sidebar is not visible, open and focus the explorer view.
+  {
+    "key": "ctrl+e",
+    "command": "workbench.explorer.fileView.focus",
+    "when": "!sideBarVisible" // More general than explorerViewletVisible
+  },
+  // 2. If sidebar is visible BUT NOT focused, focus it.
+  {
+    "key": "ctrl+e",
+    "command": "workbench.action.focusSideBar",
+    "when": "sideBarVisible && !sideBarFocus"
+  },
+  // 3. If sidebar is visible AND focused, close it.
+  {
+    "key": "ctrl+e",
+    "command": "workbench.action.closeSidebar",
+    "when": "sideBarVisible && sideBarFocus"
+  },
+  // any list view (explorer, search results, etc.)
+  {
+    "key": "j",
+    "command": "list.focusDown",
+    "when": "listFocus && !inputFocus"
+  },
+  {
+    "key": "k",
+    "command": "list.focusUp",
+    "when": "listFocus && !inputFocus"
+  },
+  {
+    "key": "r",
+    "command": "renameFile",
+    "when": "explorerViewletVisible && !inputFocus && sideBarFocus"
+  },
+  {
+    "key": "n",
+    "command": "explorer.newFile",
+    "when": "explorerViewletVisible && !inputFocus && sideBarFocus"
+  },
+  {
+    "key": "d",
+    "command": "deleteFile",
+    "when": "explorerViewletVisible && !inputFocus && sideBarFocus"
+  },
+
+  // --- Fast Pane Management ---
+  // Use Alt + Arrow keys to navigate between editor panes
+  {
+    "key": "alt+left",
+    "command": "workbench.action.focusLeftGroup"
+  },
+  {
+    "key": "alt+right",
+    "command": "workbench.action.focusRightGroup"
+  },
+  {
+    "key": "alt+up",
+    "command": "workbench.action.focusAboveGroup"
+  },
+  {
+    "key": "alt+down",
+    "command": "workbench.action.focusBelowGroup"
+  },
+
+  // --- Fast Pane Splitting ---
+  // Split editor vertically
+  {
+    "key": "alt+\\", // Easy to remember: '\' looks like a vertical split
+    "command": "workbench.action.splitEditor"
+  },
+  // Split editor horizontally
+  {
+    "key": "alt+-", // Easy to remember: '-' looks like a horizontal split
+    "command": "workbench.action.splitEditorOrthogonal"
+  },
+
+  // --- Terminal ---
+  // A better toggle for the terminal
+  {
+    "key": "ctrl+`",
+    "command": "workbench.action.terminal.toggleTerminal"
+  },
+
+  // --- Editor Actions ---
+  // Move lines up/down without having to select them first
+  {
+    "key": "alt+j",
+    "command": "editor.action.moveLinesDownAction",
+    "when": "editorTextFocus && !editorReadonly"
+  },
+  {
+    "key": "alt+k",
+    "command": "editor.action.moveLinesUpAction",
+    "when": "editorTextFocus && !editorReadonly"
+  },
+  {
+    "key": "ctrl+k w",
+    "command": "editor.emmet.action.wrapWithAbbreviation",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "ctrl+shift+j",
+    "command": "workbench.action.terminal.new",
+    "when": "terminalProcessSupported || terminalWebExtensionContributedProfile"
+  },
+  {
+    "key": "ctrl+shift+`",
+    "command": "-workbench.action.terminal.new",
+    "when": "terminalProcessSupported || terminalWebExtensionContributedProfile"
+  }
+]

@@ -26,6 +26,7 @@
 !*.fish
 !*.yaml
 !*.jpg
+!*.json
 
 # Extension-less files or specific files
 !justfile
