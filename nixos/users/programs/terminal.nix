@@ -12,7 +12,7 @@
     eza
     fd
     bat
-    magika
+    magika-cli
     ripgrep
     fzf
     htop
