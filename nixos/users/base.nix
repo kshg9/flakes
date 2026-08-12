@@ -79,7 +79,6 @@
             };
             
             environment.sessionVariables = {
-              EDITOR = "hx";
               NIXOS_OZONE_WL = "1";
               # sops CLI edits with the PERSONAL key (keeps the editing key separate
               # from each host's boot key). ~/.config/sops/age is the sops default,

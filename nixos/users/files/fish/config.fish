@@ -4,6 +4,7 @@ fzf --fish | source
 direnv hook fish | source
 
 alias cd="z"
+set -gx EDITOR hx
 set -g fish_greeting ""
 alias cat="bat"
 alias find="fd"
