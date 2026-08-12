@@ -24,7 +24,7 @@
       # host (declared in each host's configuration.nix). Only the key plumbing
       # + editing tooling live in this shared module.
       #
-      # Editing tooling: classic `sops` CLI + age (age-keygen for key mgmt).
-      environment.systemPackages = with pkgs; [ sops age ];
+      # Editing tooling: classic `sops` CLI + rage (rage-keygen for key mgmt).
+      environment.systemPackages = with pkgs; [ sops rage ];
     };
 }
