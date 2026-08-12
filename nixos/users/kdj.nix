@@ -34,6 +34,10 @@
       # The focus-ring accent there is the catppuccin default (mauve #cba6f7);
       # bump it there if you switch flake.ctp.accent.
       hjem.users.${user} = {
+        imports = [
+          (import ./programs/vscodium.nix { name = user; })
+        ];
+
         # helix: kdj-only editor. Stock nixpkgs `helix` reads ~/.config/helix;
         # config.toml selects the custom kanagawa-transparent theme (inherits the
         # bundled kanagawa, unsets the opaque bg scopes → transparent).
@@ -52,8 +56,6 @@
           "git/config.codeberg".source = ./files/git/config.codeberg;
           "git/config.tangled".source = ./files/git/config.tangled;
           "jj/config.toml".source = ./files/jujutsu/config.toml;
-          "VSCodium/User/settings.json".source = ./files/vscodium/settings.json;
-          "VSCodium/User/keybindings.json".source = ./files/vscodium/keybindings.json;
         };
         # kdj-only extras on top of the shared base. Keep the base in base.nix;
         # only what is specific to kdj goes here. This is where dev tooling lives
@@ -69,12 +71,6 @@
           #tealdeer
 
           # dev tools specific to this founder
-          (vscode-with-extensions.override {
-            vscode = vscodium-fhs;
-            vscodeExtensions = with vscode-extensions; [
-              jnoortheen.nix-ide
-            ];
-          })
           emacs-pgtk
           helix
           tmux
