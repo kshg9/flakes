@@ -34,6 +34,8 @@
         # lightweight jq (JSON processing; handy for sops `--value-file` work)
         jaq
       ];
+      
+      environment.variables.EDITOR = "hx";
 
       time.timeZone = "Asia/Kolkata";
 
