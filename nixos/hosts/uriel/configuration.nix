@@ -72,7 +72,7 @@
       sops.defaultSopsFile = ./../../../secrets/uriel.yaml;
       sops.secrets.github_ssh_private_key = {
         # keyed to kdj so the user's git can read it (default root:root)
-        path = "/home/kdj/.ssh/id_ed25519";
+        path = "/home/kdj/.ssh/id_ed25519_gh";
         owner = "kdj";
         group = "users";
         mode = "0600";
@@ -80,31 +80,19 @@
       sops.secrets.github_ssh_pubkey = {
         # pubkey is public — readable by any user in the `keys` group
         # (dir /run/secrets is root:keys).
-        path = "/home/kdj/.ssh/id_ed25519.pub";
+        path = "/home/kdj/.ssh/id_ed25519_gh.pub";
         owner = "kdj";
         group = "users";
         mode = "0444";
       };
-      sops.secrets.codeberg_ssh_private_key = {
-        path = "/home/kdj/.ssh/id_ed25519_cb";
+      sops.secrets.vcs_ssh_private_key = {
+        path = "/home/kdj/.ssh/id_ed25519_vcs";
         owner = "kdj";
         group = "users";
         mode = "0600";
       };
-      sops.secrets.codeberg_ssh_pubkey = {
-        path = "/home/kdj/.ssh/id_ed25519_cb.pub";
-        owner = "kdj";
-        group = "users";
-        mode = "0444";
-      };
-      sops.secrets.tangled_ssh_private_key = {
-        path = "/home/kdj/.ssh/id_ed25519_tangled";
-        owner = "kdj";
-        group = "users";
-        mode = "0600";
-      };
-      sops.secrets.tangled_ssh_pubkey = {
-        path = "/home/kdj/.ssh/id_ed25519_tangled.pub";
+      sops.secrets.vcs_ssh_pubkey = {
+        path = "/home/kdj/.ssh/id_ed25519_vcs.pub";
         owner = "kdj";
         group = "users";
         mode = "0444";

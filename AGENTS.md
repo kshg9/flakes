@@ -6,9 +6,9 @@ cool ideas from them. Read this before doing anything.
 
 ## Repository shape (read these first)
 
-- `KB/*.md` — the knowledge base. It documents every hard-won lesson in this repo.
+- `KB.md` — the consolidated knowledge base. It documents every hard-won lesson in this repo.
   **When I learn something new, I record it there.** Before starting a task, skim the
-  relevant KB file.
+  relevant sections.
 - `flake.nix` — flake-parts with a custom `importTree`:
   - every `.nix` file in the repo (recursively) is a flake-parts module automatically
   - files starting with `_` are EXCLUDED from the flake (the toggle convention)
@@ -186,5 +186,5 @@ git add -A
 
 ## When I learn something new
 
-Update the relevant `KB/*.md` file (or add one) and keep this AGENTS.md's "current
+Update `KB.md` and keep this AGENTS.md's "current
 state" section accurate. The KB is my memory for future sessions.

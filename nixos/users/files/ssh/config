@@ -3,12 +3,7 @@ Host github.com
     IdentityFile ~/.ssh/id_ed25519_gh
     IdentitiesOnly yes
 
-Host codeberg.org
+Host codeberg.org tangled.org
     User git
-    IdentityFile ~/.ssh/id_ed25519_cb
-    IdentitiesOnly yes
-
-Host git.tangled.sh
-    User git
-    IdentityFile ~/.ssh/id_ed25519_tangled
+    IdentityFile ~/.ssh/id_ed25519_vcs
     IdentitiesOnly yes

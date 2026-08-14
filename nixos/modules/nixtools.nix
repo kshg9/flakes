@@ -19,7 +19,13 @@
         "nix-command"
         "flakes"
         "pipe-operators"
+        "cgroups"
       ];
+      use-cgroups = true;
+    use-xdg-base-directories = true;
+    http-connections = 20;
+    show-trace = true;
+    builders-use-substitutes = true;
     };
 
     programs.nix-ld = {

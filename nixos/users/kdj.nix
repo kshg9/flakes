@@ -65,13 +65,14 @@
           # chromium
           #obsidian
           #anki-bin
+          qbittorrent
           #vesktop
           rclone
           # (use tldeer if in unstable or use tealdeer)
-          #tealdeer
+          tealdeer
 
           # dev tools specific to this founder
-          emacs-pgtk
+          #emacs-pgtk
           helix
           tmux
           zk
