@@ -78,9 +78,7 @@
               ".face.icon".source = lib.mkIf (userIcon != null) userIcon;
             };
             
-            environment.sessionVariables = {
-              NIXOS_OZONE_WL = "1";
-            };
+            environment.sessionVariables = {};
           };
       };
     };

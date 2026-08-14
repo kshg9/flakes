@@ -35,7 +35,12 @@
         jaq
       ];
       
-      environment.variables.EDITOR = "hx";
+      environment.variables = {
+        # Sledgehammer editor fallback
+        EDITOR = "hx";
+        # Force Electron/Chromium apps to run natively on Wayland
+        NIXOS_OZONE_WL = "1";
+      };
 
       time.timeZone = "Asia/Kolkata";
 
