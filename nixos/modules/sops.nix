@@ -17,7 +17,7 @@
       # known key (see the swap-and-reboot method in KB/sops.md).
       sops.age = {
         keyFile = "/var/lib/sops-nix/key.txt";
-        generateKey = false;
+        generateKey = true;
       };
 
       # No sops.secrets.* here — which secrets a host decrypts is gated per

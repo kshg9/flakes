@@ -40,9 +40,8 @@
 
         inputs.disko.nixosModules.disko
         self.diskoConfigurations.uriel
-      ]
+      ];
       # toggle heavy/optional modules by renaming `X.nix` -> `_X.nix` to skip.
-      ;
 
       # extras is now option-driven (never renamed): heavy/optional components
       # stay OFF unless flipped here. See features/extras.nix.
