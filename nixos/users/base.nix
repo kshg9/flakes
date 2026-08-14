@@ -77,8 +77,6 @@
               ".face".source = lib.mkIf (userIcon != null) userIcon;
               ".face.icon".source = lib.mkIf (userIcon != null) userIcon;
             };
-            
-            environment.sessionVariables = {};
           };
       };
     };
