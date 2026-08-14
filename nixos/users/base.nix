@@ -80,10 +80,6 @@
             
             environment.sessionVariables = {
               NIXOS_OZONE_WL = "1";
-              # sops CLI edits with the PERSONAL key (keeps the editing key separate
-              # from each host's boot key). ~/.config/sops/age is the sops default,
-              # so this is just explicitness for the age-key discovery.
-              SOPS_AGE_KEY_FILE = "/home/${name}/.config/sops/age/keys.txt";
             };
           };
       };
