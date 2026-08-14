@@ -36,7 +36,6 @@
       ];
       
       environment.variables = {
-        # Sledgehammer editor fallback
         EDITOR = "hx";
       };
 

@@ -12,8 +12,7 @@
           "PasswordManagerEnabled" = false;
         };
       };
-      
-      environment.systemPackages = [ pkgs.google-chrome pkgs.chromium ];
+
     };
   };
 }
