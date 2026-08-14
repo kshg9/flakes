@@ -21,6 +21,7 @@
         waydroid.enable = lib.mkEnableOption "Waydroid Android container";
         chrome.enable = lib.mkEnableOption "Google Chrome / Chromium browsers";
         kube.enable = lib.mkEnableOption "Kubernetes tooling (kubectl, k3d, helm)";
+        lanzaboote.enable = lib.mkEnableOption "Secure Boot using lanzaboote";
       };
 
       imports = [
@@ -29,6 +30,7 @@
         self.nixosModules.waydroid
         self.nixosModules.chrome
         self.nixosModules.kube
+        self.nixosModules.lanzaboote
       ];
     };
 }

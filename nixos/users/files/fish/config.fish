@@ -5,7 +5,6 @@ direnv hook fish | source
 
 alias cd="z"
 set -gx EDITOR hx
-set -gx SOPS_AGE_KEY_FILE "$HOME/.config/sops/age/keys.txt"
 set -g fish_greeting ""
 alias cat="bat"
 alias find="fd"

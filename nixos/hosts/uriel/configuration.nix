@@ -42,12 +42,13 @@
         self.diskoConfigurations.uriel
       ]
       # toggle heavy/optional modules by renaming `X.nix` -> `_X.nix` to skip.
-      ++ lib.optional (self ? nixosModules.lanzaboote) self.nixosModules.lanzaboote;
+      ;
 
       # extras is now option-driven (never renamed): heavy/optional components
       # stay OFF unless flipped here. See features/extras.nix.
       extras = {
         waydroid.enable = false;
+        lanzaboote.enable = true;
       };
 
       # desktop configurations: flip ON whichever compositors you want available in SDDM.
