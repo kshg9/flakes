@@ -7,6 +7,8 @@
       vscodeExtensions = with vscode-extensions; [
         jnoortheen.nix-ide
         yoavbls.pretty-ts-errors
+#llvm-vs-code-extensions.vscode-clangd
+#rust-lang.rust-analyzer
       ];
     })
   ];

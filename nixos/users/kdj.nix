@@ -65,7 +65,7 @@
           # chromium
           #obsidian
           #anki-bin
-          qbittorrent
+          #qbittorrent
           #vesktop
           rclone
           # (use tldeer if in unstable or use tealdeer)
